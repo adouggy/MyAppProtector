@@ -1,0 +1,25 @@
+/Users/ade/Documents/workspace/MyAppProtector/bin/MainActivity.ap_ \
+ : /Users/ade/Documents/workspace/MyAppProtector/res/drawable-hdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/res/drawable-mdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/res/drawable-xhdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/res/drawable-xxhdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/res/layout/activity_home.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/layout/activity_main.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/layout/activity_password.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/layout/grid_item.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/menu/home.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/menu/main.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values/attrs.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values/colors.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values/dimens.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values/strings.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values/styles.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values-sw600dp/dimens.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values-sw720dp-land/dimens.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values-v11/styles.xml \
+/Users/ade/Documents/workspace/MyAppProtector/res/values-v14/styles.xml \
+/Users/ade/Documents/workspace/MyAppProtector/bin/res/drawable-hdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/bin/res/drawable-mdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/bin/res/drawable-xhdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/bin/res/drawable-xxhdpi/ic_launcher.png \
+/Users/ade/Documents/workspace/MyAppProtector/bin/AndroidManifest.xml \

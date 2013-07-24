@@ -1,0 +1,12 @@
+# view AndroidManifest.xml #generated:39
+-keep class net.synergyinfosys.android.myappprotector.HomeActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:25
+-keep class net.synergyinfosys.android.myappprotector.LongLiveService { <init>(...); }
+
+# view AndroidManifest.xml #generated:20
+-keep class net.synergyinfosys.android.myappprotector.MainActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:31
+-keep class net.synergyinfosys.android.myappprotector.PasswordActivity { <init>(...); }
+
