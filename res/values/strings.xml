@@ -12,4 +12,6 @@
 	<string name="content_description">default content description</string>
 	<string name="notification_forground_service_title">安全桌面正在运行</string>
 	<string name="notification_forground_service_text">点击启动桌面切换程序</string>
+	
+	<string name="home_introduction">新能聚信安全桌面\n保障您的办公数据不被恶意软件盗取\n有效监控网络流量监控和进行数据的隔离</string>
 </resources>
