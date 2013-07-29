@@ -5,9 +5,9 @@
          android:paddingBottom="4dip" android:layout_width="fill_parent">  
          <ImageView   
              android:contentDescription="@string/content_description"
-               android:layout_height="wrap_content"   
                android:id="@+id/ItemImage"   
-               android:layout_width="50dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
                android:scaleType="centerInside"   
                android:layout_centerHorizontal="true">   
          </ImageView>  
@@ -17,7 +17,8 @@
                android:layout_height="wrap_content" 
                android:singleLine="true"
                android:ellipsize="end"
-               android:layout_centerHorizontal="true"   
+               android:layout_centerHorizontal="true" 
+               android:textColor="@color/black_overlay"  
                android:id="@+id/ItemText">  
          </TextView>  
 </RelativeLayout>

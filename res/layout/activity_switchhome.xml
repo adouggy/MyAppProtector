@@ -9,41 +9,27 @@
     tools:context=".SwitchHomeActivity" >
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_height="match_parent"
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/button_start"
+            android:id="@+id/button_pick_default"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Service" />
-
-        <Button
-            android:id="@+id/button_stop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Stop Service" />
-
-        <Button
-            android:id="@+id/button_lockall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lock All in list" />
+            android:text="切换回默认桌面" />
         
         <Button
             android:id="@+id/button_clear_default"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clear My Launcher Default" />
-        
-        <Button
-            android:id="@+id/button_start_launcher"
+            android:text="清除所有默认" />
+
+        <ListView
+            android:id="@+id/list_launcher"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start Launcher" />
+            android:layout_height="wrap_content" >
+        </ListView>
 
     </LinearLayout>
 

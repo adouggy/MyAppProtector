@@ -10,4 +10,6 @@
     <string name="unlock">unlock</string>
     <string name="title_activity_home">HomeActivity</string>
 	<string name="content_description">default content description</string>
+	<string name="notification_forground_service_title">安全桌面正在运行</string>
+	<string name="notification_forground_service_text">点击启动桌面切换程序</string>
 </resources>
