@@ -7,8 +7,8 @@ import java.util.List;
 import net.synergyinfosys.android.myappprotector.LockList;
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
-import net.synergyinfosys.android.netwatcher.NetThroughputReceiver;
 import net.synergyinfosys.android.netwatcher.WatcherService;
+import net.synergyinfosys.android.netwatcher.receiver.NetThroughputReceiver;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -60,6 +60,9 @@ public class HomeActivity extends Activity implements OnClickListener {
 	private Button btnStop;
 	private static EditText txtStatus;
 
+	// for app lock control
+	private Button buttonStart, buttonStop, buttonLockAllInList;
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
@@ -87,10 +90,12 @@ public class HomeActivity extends Activity implements OnClickListener {
 		View viewGrid = lf.inflate(R.layout.activity_home_grid, null);
 		View viewIntroduction = lf.inflate(R.layout.activity_home_introduction, null);
 		View viewNetWatcher = lf.inflate(R.layout.activity_netwatcher_main, null);
+		View viewAppLock = lf.inflate(R.layout.activity_applock_control, null);
 		mViewList = new ArrayList<View>();
 		mViewList.add(viewIntroduction);
 		mViewList.add(viewGrid);
 		mViewList.add(viewNetWatcher);
+		mViewList.add(viewAppLock);
 
 		mViewPager = (ViewPager) findViewById(R.id.myViewPager);
 		mViewPager.setAdapter(this.pagerAdapter);
@@ -334,7 +339,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 							Log.d(TAG, "\tdon't know what button it is.");
 						}
 					}
-
 				};
 				btnStart.setOnClickListener(l);
 				btnStop.setOnClickListener(l);
@@ -342,6 +346,35 @@ public class HomeActivity extends Activity implements OnClickListener {
 				IntentFilter throughputFilter = new IntentFilter(WatcherService.INTENT_ACTION);
 				BroadcastReceiver throughtputReciever = new NetThroughputReceiver(txtStatus);
 				mContext.registerReceiver(throughtputReciever, throughputFilter);
+				break;
+			case 3:
+				buttonStart = (Button) findViewById(R.id.button_applock_start);
+				buttonStop = (Button) findViewById(R.id.button_applock_stop);
+				buttonLockAllInList = (Button) findViewById(R.id.button_applock_lockall);
+
+				OnClickListener appLockListener = new OnClickListener() {
+					@Override
+					public void onClick(View src) {
+						switch (src.getId()) {
+						case R.id.button_applock_start:
+							Log.i(TAG, "onClick: starting service");
+							startService(new Intent(mContext, LongLiveService.class));
+							break;
+						case R.id.button_applock_stop:
+							Log.i(TAG, "onClick: stopping service");
+							stopService(new Intent(mContext, LongLiveService.class));
+							break;
+						case R.id.button_applock_lockall:
+							Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
+							sendBroadcast(broadcastIntent);
+							break;
+						}
+					}
+				};
+				
+				buttonStart.setOnClickListener(appLockListener);
+				buttonStop.setOnClickListener(appLockListener);
+				buttonLockAllInList.setOnClickListener(appLockListener);
 				break;
 			}
 

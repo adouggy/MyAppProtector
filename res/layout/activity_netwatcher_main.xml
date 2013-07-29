@@ -13,21 +13,13 @@
             android:id="@+id/button_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Net Watcher" />
+            android:text="@string/netwatcher_start" />
 
         <Button
             android:id="@+id/button_stop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop Net Watcher" />
-<!-- 
-        <Button
-            android:id="@+id/button_private"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start Private Connecting" />
- -->
-
+            android:text="@string/netwatcher_stop" />
             <EditText
                 android:id="@+id/editText1"
                 android:layout_width="match_parent"
@@ -37,8 +29,8 @@
                 android:inputType="none"
                 android:minLines="25"
                 android:singleLine="false"
+                android:textSize="12sp"
                 android:editable="false"
-                android:textSize="8sp"
                 android:scrollHorizontally="true" >
             </EditText>
     </LinearLayout>

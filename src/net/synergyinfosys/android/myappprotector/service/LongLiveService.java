@@ -121,10 +121,7 @@ public class LongLiveService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(TAG, "OnStartCommand");
 		handleStart();
-		return START_STICKY/*
-							 * super.onStartCommand(intent, START_STICKY,
-							 * startId)
-							 */;
+		return START_STICKY; // for restart this service..
 	}
 	
 	@Override
@@ -139,7 +136,7 @@ public class LongLiveService extends Service {
 											this.mContext, 
 											0, 
 											R.drawable.ic_launcher, 
-											r.getString( R.string.notification_forground_service_text ), 
+											"安全桌面已启动..", 
 											0, 
 											r.getString(R.string.notification_forground_service_title ), 
 											r.getString(R.string.notification_forground_service_text ), 

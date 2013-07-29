@@ -1,4 +1,4 @@
-package net.synergyinfosys.android.netwatcher;
+package net.synergyinfosys.android.netwatcher.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
