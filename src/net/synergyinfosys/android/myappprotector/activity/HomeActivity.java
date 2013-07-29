@@ -7,10 +7,14 @@ import java.util.List;
 import net.synergyinfosys.android.myappprotector.LockList;
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
+import net.synergyinfosys.android.netwatcher.NetThroughputReceiver;
+import net.synergyinfosys.android.netwatcher.WatcherService;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -26,6 +30,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,6 +54,11 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 	private HashMap<String, Boolean> lockList = null;
 	private ImageView imgForDial = null, imgForSMS = null;
+
+	// for net watcher
+	private Button btnStart;
+	private Button btnStop;
+	private static EditText txtStatus;
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -75,9 +86,11 @@ public class HomeActivity extends Activity implements OnClickListener {
 		LayoutInflater lf = LayoutInflater.from(this);
 		View viewGrid = lf.inflate(R.layout.activity_home_grid, null);
 		View viewIntroduction = lf.inflate(R.layout.activity_home_introduction, null);
+		View viewNetWatcher = lf.inflate(R.layout.activity_netwatcher_main, null);
 		mViewList = new ArrayList<View>();
 		mViewList.add(viewIntroduction);
 		mViewList.add(viewGrid);
+		mViewList.add(viewNetWatcher);
 
 		mViewPager = (ViewPager) findViewById(R.id.myViewPager);
 		mViewPager.setAdapter(this.pagerAdapter);
@@ -101,7 +114,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 		View rootView = imgForDial.getRootView();
 		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
-
 	}
 
 	@Override
@@ -264,8 +276,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 		public CharSequence getPageTitle(int position) {
 			return /* titleList.get(position) */"blah";
 		}
-		
-		
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
@@ -303,6 +313,35 @@ public class HomeActivity extends Activity implements OnClickListener {
 					}
 
 				});
+				break;
+			case 2:
+				btnStart = (Button) findViewById(R.id.button_start);
+				btnStop = (Button) findViewById(R.id.button_stop);
+				txtStatus = (EditText) findViewById(R.id.editText1);
+				OnClickListener l = new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						switch (v.getId()) {
+						case R.id.button_start:
+							Log.d(TAG, "\tstart button clicked.");
+							startService(new Intent(mContext, WatcherService.class));
+							break;
+						case R.id.button_stop:
+							Log.d(TAG, "\tstop button clicked.");
+							stopService(new Intent(mContext, WatcherService.class));
+							break;
+						default:
+							Log.d(TAG, "\tdon't know what button it is.");
+						}
+					}
+
+				};
+				btnStart.setOnClickListener(l);
+				btnStop.setOnClickListener(l);
+
+				IntentFilter throughputFilter = new IntentFilter(WatcherService.INTENT_ACTION);
+				BroadcastReceiver throughtputReciever = new NetThroughputReceiver(txtStatus);
+				mContext.registerReceiver(throughtputReciever, throughputFilter);
 				break;
 			}
 

@@ -12,6 +12,20 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    
+     <!-- 以下是使用wifi访问网络所需的权限 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
+    </uses-permission>
+
+    <!-- 以下是使用blue tooth所需要的权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:allowBackup="true"
@@ -58,6 +72,36 @@
             android:name="net.synergyinfosys.android.myappprotector.activity.SwitchHomeActivity"
             android:label="@string/app_name" >
         </activity>
+        
+        <!-- for net watcher -->
+        <activity
+            android:name="net.synergyinfosys.android.netwatcher.NetWatcherActivity"
+            android:label="@string/app_name" >
+        </activity>
+
+        <service
+            android:name="net.synergyinfosys.android.netwatcher.WatcherService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="net.synergyinfosys.android.netwatcher.WatcherService" >
+                </action>
+            </intent-filter>
+        </service>
+        <!-- 这两个receiver用于开机自动启动WatcherService -->
+        <receiver
+            android:name="net.synergyinfosys.android.netwatcher.receiver.MyBootReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="net.synergyinfosys.android.netwatcher.receiver.AlarmReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="net.synergyinfosys.android.netwatcher.receiver.AlarmReceiver" />
+            </intent-filter>
+        </receiver>
         
     </application>
 
