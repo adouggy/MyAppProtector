@@ -83,6 +83,10 @@ public class HomeActivity extends Activity implements OnItemClickListener, OnCli
 		}
 		
 		startService(new Intent(this, LongLiveService.class));
+		
+		View rootView = mGrid.getRootView();
+		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
+		
 	}
 
 	@Override
@@ -123,7 +127,7 @@ public class HomeActivity extends Activity implements OnItemClickListener, OnCli
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent();
-		ComponentName cn = new ComponentName("net.synergyinfosys.android.myappprotector", "net.synergyinfosys.android.myappprotector.HomeActivity");
+		ComponentName cn = new ComponentName("net.synergyinfosys.android.myappprotector", "net.synergyinfosys.android.myappprotector.activity.HomeActivity");
 		intent.setComponent(cn);
 		startActivity(intent);
 	}
