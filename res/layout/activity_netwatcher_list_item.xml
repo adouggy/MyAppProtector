@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="20dp" >
+
+    <TextView
+        android:id="@+id/netwatcher_label"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="20dp"
+        android:layout_alignParentLeft="true"
+        android:textSize="12sp"
+        android:inputType="none" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/netwatcher_download_status"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:inputType="none"
+        android:textSize="12sp"
+        android:layout_toLeftOf="@+id/netwatcher_upload_status"
+        android:layout_marginRight="10dp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/netwatcher_upload_status"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:inputType="none"
+        android:textSize="12sp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp" >
+    </TextView>
+
+</RelativeLayout>

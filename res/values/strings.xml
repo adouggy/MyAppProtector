@@ -16,7 +16,8 @@
 	<string name="home_introduction">新能聚信安全桌面\n保障您的办公数据\n有效监控网络流量\n进行应用加锁与隔离</string>
 	
 	<string name="applock_text">安全桌面监管服务</string>
-	<string name="applock_lockAll">全部锁定</string>
+	<string name="applock_lockAll">解除/锁定 已选应用</string>
+	<string name="applock_list_description">缩略图</string>
 	
 	<string name="netwatcher_text">网络监管服务</string>
 </resources>

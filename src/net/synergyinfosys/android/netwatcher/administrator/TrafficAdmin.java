@@ -1,11 +1,12 @@
 package net.synergyinfosys.android.netwatcher.administrator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 
 import android.net.TrafficStats;
-import android.util.Log;
 
 public class TrafficAdmin {
 
@@ -42,11 +43,9 @@ public class TrafficAdmin {
 		sb.append("3g/2g接受字节数:" + getMobileRxBytes() + "KB\n");
 		return sb.toString();
 	}
-
-	public String getStatusForRunningApp(AppAdmin appAdmin) {
-		StringBuilder sb = new StringBuilder();
-		
-		List<RunningAppInfo> list = appAdmin.queryAllRunningAppInfo();
+	
+	public ArrayList<RunningAppInfo> getStatusForRunningAppList(AppAdmin appAdmin) {
+		ArrayList<RunningAppInfo> list = appAdmin.queryAllRunningAppInfo();
 		for (RunningAppInfo i : list) {
 			long rx = getMobileRxBytes(i.getUid());
 			long tx = getMobileTxBytes(i.getUid());
@@ -61,8 +60,16 @@ public class TrafficAdmin {
 			}} 
 		);
 		
+		return list;
+	}
+
+	public String getStatusForRunningApp(AppAdmin appAdmin) {
+		StringBuilder sb = new StringBuilder();
+		
+		ArrayList<RunningAppInfo> list = getStatusForRunningAppList(appAdmin);
+		
 		for( RunningAppInfo i: list ){
-			sb.append(i.getAppLabel() + /*"\t\t[p:" + i.getPid() + ",u:" + i.getUid() + "]\t" +*/ "  (down:" + i.getRxkb() + "kb,\tup:" + i.getTxkb() + "kb)");
+			sb.append(i.getAppLabel() + "  (down:" + i.getRxkb() + "kb,\tup:" + i.getTxkb() + "kb)");
 			sb.append("\n");
 		}
 		

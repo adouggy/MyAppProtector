@@ -15,18 +15,12 @@
         android:paddingTop="15dp"
         android:paddingBottom="15dp" />
 
-    <EditText
-        android:id="@+id/editText1"
+    <ListView
+        android:id="@+id/listView_net_status"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:editable="false"
-        android:ems="10"
-        android:inputType="none"
-        android:minLines="25"
-        android:scrollHorizontally="true"
-        android:singleLine="false"
-        android:textSize="12sp" >
-    </EditText>
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+    </ListView>
 
 </LinearLayout>

@@ -1,69 +1,145 @@
 package net.synergyinfosys.android.myappprotector.activity.holder;
 
+import java.util.List;
+
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 public class AppLockViewHolder {
-	
+
 	public static final String TAG = "AppLockViewHolder";
 
 	private Activity mRootActivity = null;
 	private Context mContext = null;
-	
+
 	private Switch sAppLock;
-	private Button buttonLockAllInList;
-	
-	public AppLockViewHolder(Activity act){
+	private Switch sAppLockAll;
+
+	private List<ResolveInfo> mApps = null;
+
+	private ListView mListView = null;
+
+	private OnCheckedChangeListener lockListener = new OnCheckedChangeListener() {
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if (isChecked) {
+				Log.i(TAG, "onClick: starting service");
+				mContext.startService(new Intent(mContext, LongLiveService.class));
+			} else {
+				Log.i(TAG, "onClick: stopping service");
+				mContext.stopService(new Intent(mContext, LongLiveService.class));
+			}
+		}
+	};
+
+	private OnCheckedChangeListener lockAllListener = new OnCheckedChangeListener() {
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if (isChecked) {
+				// prepare to lock all in list..
+				Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
+				mContext.sendBroadcast(broadcastIntent);
+			} else {
+				// uncheck all
+			}
+		}
+	};
+
+	public AppLockViewHolder(Activity act) {
 		this.mRootActivity = act;
 		this.mContext = act.getApplicationContext();
 
 		sAppLock = (Switch) mRootActivity.findViewById(R.id.switch_applock);
-		buttonLockAllInList = (Button) mRootActivity.findViewById(R.id.button_applock_lockall);
+		sAppLockAll = (Switch) mRootActivity.findViewById(R.id.applock_lockall);
 
-		OnClickListener appLockListener = new OnClickListener() {
-			@Override
-			public void onClick(View src) {
-				switch (src.getId()) {
-				case R.id.button_applock_lockall:
-					Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
-					mContext.sendBroadcast(broadcastIntent);
-					break;
-				}
-			}
-		};
-		
-		sAppLock.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+		sAppLockAll.setOnCheckedChangeListener(lockAllListener);
+		sAppLock.setOnCheckedChangeListener(lockListener);
 
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if( isChecked ){
-					Log.i(TAG, "onClick: starting service");
-					mContext.startService(new Intent(mContext, LongLiveService.class));
-				}else{
-					Log.i(TAG, "onClick: stopping service");
-					mContext.stopService(new Intent(mContext, LongLiveService.class));
-				}
-			}
-			
-		});
-		
-		buttonLockAllInList.setOnClickListener(appLockListener);
-		
-		if( MyUtil.isServiceRunning(this.mContext, LongLiveService.class.getName()) ){
+		if (MyUtil.isServiceRunning(this.mContext, LongLiveService.class.getName())) {
 			this.sAppLock.setChecked(true);
-		}else{
+		} else {
 			this.sAppLock.setChecked(false);
 		}
+
+		loadApps();
+		mListView = (ListView) mRootActivity.findViewById(R.id.applock_list);
+		mListView.setAdapter(new AppListAdapter());
+	}
+
+	class AppListAdapter extends BaseAdapter {
+		private class ItemHolder {
+			ImageView appIcon;
+			TextView appName;
+			CheckBox appCheckBox;
+		}
+
+		private LayoutInflater mInflater;
+
+		public AppListAdapter() {
+			super();
+			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
+
+		@Override
+		public int getCount() {
+			return mApps.size();
+		}
+
+		@Override
+		public Object getItem(int idx) {
+			return mApps.get(idx);
+		}
+
+		@Override
+		public long getItemId(int idx) {
+			return idx;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ItemHolder holder = null;
+
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.activity_applock_list_item, null);
+				holder = new ItemHolder();
+				holder.appName = (TextView) convertView.findViewById(R.id.applock_list_label);
+				holder.appIcon = (ImageView) convertView.findViewById(R.id.applock_list_img);
+				holder.appCheckBox = (CheckBox) convertView.findViewById(R.id.applock_list_checkbox);
+				convertView.setTag(holder);
+			} else {
+				holder = (ItemHolder) convertView.getTag();
+			}
+
+			ResolveInfo info = mApps.get(position);
+
+			holder.appName.setText(info.activityInfo.loadLabel(mContext.getPackageManager()));
+			holder.appIcon.setBackground(info.activityInfo.loadIcon(mContext.getPackageManager()));
+			holder.appCheckBox.setChecked(false);
+
+			return convertView;
+		}
+	}
+
+	private void loadApps() {
+		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		mApps = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
 	}
 }

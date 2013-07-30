@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.LockList;
 import net.synergyinfosys.android.myappprotector.R;
-import net.synergyinfosys.android.myappprotector.activity.holder.AppListViewHolder;
+import net.synergyinfosys.android.myappprotector.activity.holder.AppGridViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.AppLockViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.NetWatcherViewHolder;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
@@ -41,7 +41,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 	//for dock
 	private ResolveInfo mDialApp, mSMSApp, mEmailApp, mWebApp;
 	private ImageView imgForDial = null, imgForSMS = null, imgForEmail = null, imgForWeb = null;
-	AppListViewHolder mAppListHolder = null;
+	AppGridViewHolder mAppListHolder = null;
 	
 	//for net watcher
 	NetWatcherViewHolder mNetWatcherHolder = null;
@@ -224,7 +224,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 			case 1:
 				Log.i(TAG, "initial app list view..");
 				if( mAppListHolder == null )
-					mAppListHolder = new AppListViewHolder(HomeActivity.this);
+					mAppListHolder = new AppGridViewHolder(HomeActivity.this);
 				break;
 			case 2:
 				Log.i(TAG, "initial net watcher view..");

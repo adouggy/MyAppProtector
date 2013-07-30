@@ -1,6 +1,6 @@
 package net.synergyinfosys.android.netwatcher.receiver;
 
-import net.synergyinfosys.android.netwatcher.WatcherService;
+import net.synergyinfosys.android.myappprotector.service.WatcherService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

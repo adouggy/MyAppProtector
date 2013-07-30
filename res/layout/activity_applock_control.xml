@@ -14,12 +14,22 @@
         android:paddingLeft="20dp"
         android:paddingRight="15dp"
         android:paddingTop="15dp"
+        android:paddingBottom="10dp" />
+    
+    <Switch
+        android:id="@+id/applock_lockall"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/applock_lockAll"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="10dp"
         android:paddingBottom="15dp" />
 
-    <Button
-        android:id="@+id/button_applock_lockall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/applock_lockAll" />
+    <ListView 
+        android:id="@+id/applock_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
 
 </LinearLayout>

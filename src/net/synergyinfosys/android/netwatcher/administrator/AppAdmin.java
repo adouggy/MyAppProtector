@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -24,7 +26,7 @@ public class AppAdmin {
 
 	// 查询所有正在运行的应用程序信息, 包括他们所在的进程id和进程名
 	// 这儿我直接获取了系统里安装的所有应用程序，然后根据包名pkgname过滤获取所有真正运行的应用程序
-	public List<RunningAppInfo> queryAllRunningAppInfo() {
+	public ArrayList<RunningAppInfo> queryAllRunningAppInfo() {
 		// 查询所有已经安装的应用程序
 		List<ApplicationInfo> listAppcations = mPM.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
 		Collections.sort(listAppcations, new ApplicationInfo.DisplayNameComparator(mPM));// 排序
@@ -52,7 +54,7 @@ public class AppAdmin {
 			}
 		}
 		// 保存所有正在运行的应用程序信息
-		List<RunningAppInfo> runningAppInfos = new ArrayList<RunningAppInfo>(); // 保存过滤查到的AppInfo
+		ArrayList<RunningAppInfo> runningAppInfos = new ArrayList<RunningAppInfo>(); // 保存过滤查到的AppInfo
 
 		for (ApplicationInfo app : listAppcations) {
 			// 如果该包名存在 则构造一个RunningAppInfo对象
