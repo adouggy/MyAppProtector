@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingTop="30dp"
+    android:orientation="vertical" >
 
-    <LinearLayout
+    <Switch
+        android:id="@+id/switch_netwatcher"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="30dp"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:text="@string/netwatcher_text"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp" />
 
-        <Button
-            android:id="@+id/button_start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/netwatcher_start" />
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        android:minLines="25"
+        android:scrollHorizontally="true"
+        android:singleLine="false"
+        android:textSize="12sp" >
+    </EditText>
 
-        <Button
-            android:id="@+id/button_stop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/netwatcher_stop" />
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:ems="10"
-                android:inputType="none"
-                android:minLines="25"
-                android:singleLine="false"
-                android:textSize="12sp"
-                android:editable="false"
-                android:scrollHorizontally="true" >
-            </EditText>
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

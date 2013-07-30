@@ -1,33 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:paddingBottom="20dp"
+    android:paddingTop="30dp"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+    <Switch
+        android:id="@+id/switch_applock"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/applock_text"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp" />
+
+    <Button
+        android:id="@+id/button_applock_lockall"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="20dp" >
+        android:layout_height="wrap_content"
+        android:text="@string/applock_lockAll" />
 
-        <Button
-            android:id="@+id/button_applock_start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/applock_start" />
-
-        <Button
-            android:id="@+id/button_applock_stop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/applock_stop" />
-
-        <Button
-            android:id="@+id/button_applock_lockall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/applock_lockAll" />
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

@@ -27,7 +27,7 @@
             android:layout_height="70dp"
             android:layout_marginLeft="15dp"
             android:background="@drawable/ic_launcher"
-            android:scaleType="fitXY" />
+            android:scaleType="centerInside" />
 
         <ImageView
             android:id="@+id/imageView_forSMS"
@@ -35,7 +35,25 @@
             android:layout_height="70dp"
             android:layout_marginLeft="15dp"
             android:background="@drawable/ic_launcher"
-            android:scaleType="fitXY" />
+            android:scaleType="centerInside" />
+        
+         <ImageView
+            android:id="@+id/imageView_forEmail"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/ic_launcher"
+            android:layout_marginTop="5dp"
+            android:scaleType="centerInside" />
+         
+         <ImageView
+            android:id="@+id/imageView_forWeb"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginLeft="15dp"
+             android:layout_marginTop="5dp"
+            android:background="@drawable/ic_launcher"
+            android:scaleType="centerInside" />
     </LinearLayout>
 
 </RelativeLayout>
