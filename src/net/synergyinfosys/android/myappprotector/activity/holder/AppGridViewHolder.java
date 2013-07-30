@@ -3,7 +3,6 @@ package net.synergyinfosys.android.myappprotector.activity.holder;
 import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
-import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,18 +10,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class AppGridViewHolder{
 
@@ -54,15 +52,7 @@ public class AppGridViewHolder{
 				if (!isLocked(pkg)) {
 					Toast.makeText(mContext, "Already locked.", Toast.LENGTH_SHORT).show();
 				} else {
-					// 先给监听服务发个广播，说我启动的是安全的
-					Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_START_SAFE);
-					Bundle b = new Bundle();
-					b.putString("safePkgName", pkg);
-					b.putString("safeClsName", cls);
-					broadcastIntent.putExtras(b);
-					mContext.sendBroadcast(broadcastIntent);
-
-					// 再启动
+					// 启动
 					ComponentName component = new ComponentName(pkg, cls);
 					Intent i = new Intent();
 					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

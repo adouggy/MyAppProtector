@@ -5,6 +5,7 @@ import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import net.synergyinfosys.android.myappprotector.util.SystemUiHider;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ public class PasswordActivity extends Activity implements OnClickListener{
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
-	private static final boolean AUTO_HIDE = true;
+	private static final boolean AUTO_HIDE = false;
 
 	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -42,12 +43,12 @@ public class PasswordActivity extends Activity implements OnClickListener{
 	 * If set, will toggle the system UI visibility upon interaction. Otherwise,
 	 * will show the system UI visibility upon interaction.
 	 */
-	private static final boolean TOGGLE_ON_CLICK = true;
+	private static final boolean TOGGLE_ON_CLICK = false;
 
 	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
 	 */
-	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
+	private static final int HIDER_FLAGS = SystemUiHider.FLAG_FULLSCREEN;
 
 	/**
 	 * The instance of the {@link SystemUiHider} for this activity.
@@ -160,7 +161,7 @@ public class PasswordActivity extends Activity implements OnClickListener{
 		// Trigger the initial hide() shortly after the activity has been
 		// created, to briefly hint to the user that UI controls
 		// are available.
-		delayedHide(100);
+//		delayedHide(100);
 	}
 
 	/**
@@ -221,12 +222,18 @@ public class PasswordActivity extends Activity implements OnClickListener{
 		}
 		
 		if( pass ){
-			Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);   
+			Intent unlockBroadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
 			Bundle bundle = new Bundle();
-			bundle.putString("unlockPkgName", pkgName);
-			bundle.putString("unlockClsName", clsName);
-			broadcastIntent.putExtras(bundle);
-            sendBroadcast(broadcastIntent); 
+			bundle.putString("pkgName", pkgName);
+			unlockBroadcastIntent.putExtras(bundle);
+			sendBroadcast(unlockBroadcastIntent); 
+			
+			Intent startPackageIntent = new Intent(Intent.ACTION_MAIN);
+			startPackageIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			ComponentName cn = new ComponentName(pkgName, clsName);
+			startPackageIntent.setComponent(cn);
+			startPackageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity( startPackageIntent );
             this.finish();
 		}
 	}

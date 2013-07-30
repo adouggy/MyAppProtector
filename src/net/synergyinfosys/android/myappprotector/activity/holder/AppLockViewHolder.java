@@ -1,8 +1,10 @@
 package net.synergyinfosys.android.myappprotector.activity.holder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
@@ -23,7 +25,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 public class AppLockViewHolder {
-
 	public static final String TAG = "AppLockViewHolder";
 
 	private Activity mRootActivity = null;
@@ -32,7 +33,7 @@ public class AppLockViewHolder {
 	private Switch sAppLock;
 	private Switch sAppLockAll;
 
-	private List<ResolveInfo> mApps = null;
+	private ArrayList<RunningAppInfo> mApps = null;
 
 	private ListView mListView = null;
 
@@ -52,12 +53,21 @@ public class AppLockViewHolder {
 	private OnCheckedChangeListener lockAllListener = new OnCheckedChangeListener() {
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
 			if (isChecked) {
 				// prepare to lock all in list..
-				Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
-				mContext.sendBroadcast(broadcastIntent);
+				// stay what it is..
 			} else {
 				// uncheck all
+				for( RunningAppInfo info: mApps ){
+					info.setLocked(false);
+				}
+			}
+			broadcastIntent.putParcelableArrayListExtra("lockList", mApps);
+			mContext.sendBroadcast(broadcastIntent);
+			
+			if( mListView != null ){
+				((AppListAdapter)mListView.getAdapter()).notifyDataSetChanged();
 			}
 		}
 	};
@@ -113,7 +123,7 @@ public class AppLockViewHolder {
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			ItemHolder holder = null;
 
 			if (convertView == null) {
@@ -127,12 +137,21 @@ public class AppLockViewHolder {
 				holder = (ItemHolder) convertView.getTag();
 			}
 
-			ResolveInfo info = mApps.get(position);
+			RunningAppInfo info = mApps.get(position);
+			holder.appCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					Log.i(TAG, position + " changed to " + isChecked);
+					RunningAppInfo info = mApps.get(position);
+					info.setLocked(isChecked);
+					mApps.set(position, info);
+					notifyDataSetChanged();
+				}
+			});
 
-			holder.appName.setText(info.activityInfo.loadLabel(mContext.getPackageManager()));
-			holder.appIcon.setBackground(info.activityInfo.loadIcon(mContext.getPackageManager()));
-			holder.appCheckBox.setChecked(false);
-
+			holder.appName.setText( info.getAppLabel() );
+			holder.appIcon.setBackground( info.getAppIcon() );
+			holder.appCheckBox.setChecked( info.isLocked() );
 			return convertView;
 		}
 	}
@@ -140,6 +159,15 @@ public class AppLockViewHolder {
 	private void loadApps() {
 		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
 		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		mApps = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
+		List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
+		mApps = new ArrayList<RunningAppInfo>(); 
+		for( ResolveInfo info : list ){
+			RunningAppInfo a = new RunningAppInfo();
+			a.setAppIcon( info.activityInfo.loadIcon(mContext.getPackageManager()) );
+			a.setAppLabel( info.activityInfo.loadLabel(mContext.getPackageManager()).toString() );
+			a.setLocked( false );
+			a.setPkgName(info.activityInfo.packageName);
+			mApps.add(a);
+		}
 	}
 }

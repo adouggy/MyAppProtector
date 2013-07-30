@@ -1,12 +1,11 @@
 package net.synergyinfosys.android.myappprotector.service;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.ArrayList;
 
-import net.synergyinfosys.android.myappprotector.LockList;
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.activity.PasswordActivity;
 import net.synergyinfosys.android.myappprotector.activity.SwitchHomeActivity;
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.util.NotificationHelper;
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -24,61 +23,34 @@ import android.util.Log;
 public class LongLiveService extends Service {
 
 	public static final String TAG = "LongLiveService";
-	public static final String LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION = "LongLiveService.broadcast.unlock";
 	public static final String LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION = "LongLiveService.broadcast.lockall";
-	public static final String LONGLIVESERVICE_BROADCAST_START_SAFE = "LongLiveService.broadcast.start.safe";
+	public static final String LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION = "LongLiveService.broadcast.unlock";
 
 	ActivityManager mActivityManager = null;
 	long threadInterval = 1000;
 	Context mContext = null;
 
-	Map<String, Boolean> lockList = null; // package list
-
-	private String safePkgName = "", safeClsName = "";
-
-	private final BroadcastReceiver receiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context ctx, Intent intent) {
-			Bundle bundle = intent.getExtras();
-			String pkgName = bundle.getString("unlockPkgName");
-			String clsName = bundle.getString("unlockClsName");
-			Log.i(TAG, "Prepare to unlock:" + pkgName + "/" + clsName);
-			LockList.INSTANCE.setList(pkgName, false);
-			lockList = LockList.INSTANCE.loadList();
-
-			Intent startPackageIntent = new Intent(Intent.ACTION_MAIN);
-			startPackageIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-			ComponentName cn = new ComponentName(pkgName, clsName);
-			intent.setComponent(cn);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			ctx.startActivity(intent);
-		}
-	};
-
+	ArrayList<RunningAppInfo> mLockList = null;
+	
 	private final BroadcastReceiver lockAllReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
-			Log.i(TAG, "Prepare to lock all");
-			lockList = LockList.INSTANCE.loadList();
-			Iterator<String> iter = lockList.keySet().iterator();
-			while (iter.hasNext()) {
-				String key = iter.next();
-				lockList.put(key, true);
-			}
-			LockList.INSTANCE.saveList(lockList);
+			Log.i(TAG, "Prepare to lock the selected");
+			mLockList = intent.getParcelableArrayListExtra("lockList");
 		}
 	};
-
-	private final BroadcastReceiver isStartFromMyLauncherReceiver = new BroadcastReceiver() {
+	
+	private final BroadcastReceiver unlockReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
-			Log.i(TAG, "isStartFromMyLauncherReceiver");
-
-			Bundle bundle = intent.getExtras();
-			safePkgName = bundle.getString("safePkgName");
-			safeClsName = bundle.getString("safeClsName");
-
-			Log.i(TAG, ">>>>>>>>>>safe start " + safePkgName + "," + safeClsName);
+			String pkgName = intent.getStringExtra("pkgName");
+			Log.i( TAG, "Prepare to unlock the app " + pkgName );
+			for( RunningAppInfo info : mLockList ){
+				if( info.getPkgName().compareTo(pkgName) == 0 ){
+					info.setLocked(false);
+					break;
+				}
+			}
 		}
 	};
 
@@ -91,29 +63,21 @@ public class LongLiveService extends Service {
 	public void onCreate() {
 		Log.i(TAG, "onCreate");
 		mContext = this.getApplicationContext();
-		lockList = LockList.INSTANCE.loadList();
-
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
-		registerReceiver(receiver, filter);
 
 		IntentFilter lockAllFilter = new IntentFilter();
 		lockAllFilter.addAction(LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
 		registerReceiver(lockAllReceiver, lockAllFilter);
-
-		IntentFilter safeStartFilter = new IntentFilter();
-		lockAllFilter.addAction(LONGLIVESERVICE_BROADCAST_START_SAFE);
-		registerReceiver(isStartFromMyLauncherReceiver, safeStartFilter);
+		
+		IntentFilter unlockFilter = new IntentFilter();
+		unlockFilter.addAction(LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
+		registerReceiver(unlockReceiver, unlockFilter);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy");
-
-		unregisterReceiver(receiver);
 		unregisterReceiver(lockAllReceiver);
-		unregisterReceiver(isStartFromMyLauncherReceiver);
-		
+		unregisterReceiver(unlockReceiver);
 		stopForeground(true);
 	}
 
@@ -176,32 +140,24 @@ public class LongLiveService extends Service {
 		Log.d(TAG, "pkg:" + pkgName);
 		Log.d(TAG, "cls:" + className);
 
-		// app换了，说明有新的启动的app了！
 		Log.d(TAG, "Running app is " + pkgName);
 
+		if( mLockList == null )
+			return;
+		
 		boolean isInTheList = false;
-		String s = null;
-		lockList = LockList.INSTANCE.loadList();
-		Iterator<String> iter = lockList.keySet().iterator();
-		while (iter.hasNext()) {
-			s = iter.next();
-			if (s.compareTo(pkgName) == 0) {
+		for( RunningAppInfo app: mLockList ){
+			if( app.isLocked() && app.getPkgName().compareTo( pkgName ) == 0){
 				isInTheList = true;
 				break;
 			}
 		}
 
-		// 如果从安全桌面启动，则跳过锁定
-		if (pkgName.compareTo(safePkgName) == 0 && className.compareTo(safeClsName) == 0) {
-			return;
-		}
-
-		// 如果再block list中并且没输入过密码，则尝试锁定。
-		if (isInTheList && s != null && lockList.get(s)) {
+		// 如果在block list中
+		if (isInTheList) {
 			// show the desktop for killing the app
 			Intent i = new Intent(Intent.ACTION_MAIN);
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new
-														// task标识
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new task标识
 			i.addCategory(Intent.CATEGORY_HOME);
 			startActivity(i);
 

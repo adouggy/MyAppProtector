@@ -13,6 +13,15 @@ public class RunningAppInfo implements Parcelable {
 	private int uid;
 	private long rxkb;
 	private long txkb;
+	private boolean isLocked;
+	
+	public boolean isLocked() {
+		return isLocked;
+	}
+
+	public void setLocked(boolean isLocked) {
+		this.isLocked = isLocked;
+	}
 
 	public long getRxkb() {
 		return rxkb;
@@ -89,6 +98,8 @@ public class RunningAppInfo implements Parcelable {
 			info.setAppLabel(in.readString());
 			info.setRxkb(in.readLong());
 			info.setTxkb(in.readLong());
+			info.setPkgName(in.readString());
+			info.setLocked(in.readByte() == 1);
 			return info;
 		}
 
@@ -107,5 +118,7 @@ public class RunningAppInfo implements Parcelable {
 		dest.writeString(this.appLabel);
 		dest.writeLong(this.rxkb);
 		dest.writeLong(this.txkb);
+		dest.writeString(this.pkgName);
+		dest.writeByte((byte) (isLocked ? 1 : 0));
 	}
 }
