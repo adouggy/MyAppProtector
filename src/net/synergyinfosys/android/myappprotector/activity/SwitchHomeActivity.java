@@ -1,16 +1,14 @@
 package net.synergyinfosys.android.myappprotector.activity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
-
+import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -54,7 +52,6 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 		mListView = (ListView) findViewById(R.id.list_launcher);
 		mListView.setAdapter(new LaucherListAdapter());
 		mListView.setOnItemClickListener(this);
-
 	}
 
 	@Override
@@ -83,48 +80,6 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 		// System.out.println();
 		// }
 		return list;
-	}
-
-	boolean isMyLauncherDefault() {
-		final IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
-		filter.addCategory(Intent.CATEGORY_HOME);
-
-		List<IntentFilter> filters = new ArrayList<IntentFilter>();
-		filters.add(filter);
-
-		final String myPackageName = getPackageName();
-		List<ComponentName> activities = new ArrayList<ComponentName>();
-		final PackageManager packageManager = (PackageManager) getPackageManager();
-
-		// You can use name of your package here as third argument
-		packageManager.getPreferredActivities(filters, activities, null);
-
-		for (ComponentName activity : activities) {
-			if (myPackageName.equals(activity.getPackageName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public String whichLauncherIsRunning() {
-		final Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.addCategory(Intent.CATEGORY_HOME);
-		final ResolveInfo res = getPackageManager().resolveActivity(intent, 0);
-		if (res.activityInfo == null) {
-			// should not happen. A home is always installed, isn't it?
-			return "N/A";
-		}
-		if (res.activityInfo.packageName.equals("android")) {
-			// No default selected
-			return "No default";
-		} else {
-			// res.activityInfo.packageName and res.activityInfo.name gives you
-			// the default app
-			String pkgName = res.activityInfo.packageName;
-//			String actName = res.activityInfo.name;
-			return pkgName;
-		}
 	}
 
 	public class LaucherListAdapter extends BaseAdapter {
@@ -180,7 +135,11 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 			holder.appImage.setImageDrawable(d);
 
 			final String appName = info.activityInfo.loadLabel(getPackageManager()).toString();
-			holder.appName.setText(appName);
+			String extraStr = "";
+			if( MyUtil.isLauncherDefault(getApplicationContext(), pkgName)){
+				extraStr = "(默认)";
+			}
+			holder.appName.setText(appName + extraStr);
 
 			holder.switchButton.setOnClickListener(new OnClickListener() {
 				@Override

@@ -6,6 +6,7 @@ import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.activity.PasswordActivity;
 import net.synergyinfosys.android.myappprotector.activity.SwitchHomeActivity;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
+import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import net.synergyinfosys.android.myappprotector.util.NotificationHelper;
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -31,7 +32,7 @@ public class LongLiveService extends Service {
 	Context mContext = null;
 
 	ArrayList<RunningAppInfo> mLockList = null;
-	
+
 	private final BroadcastReceiver lockAllReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
@@ -39,14 +40,14 @@ public class LongLiveService extends Service {
 			mLockList = intent.getParcelableArrayListExtra("lockList");
 		}
 	};
-	
+
 	private final BroadcastReceiver unlockReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
 			String pkgName = intent.getStringExtra("pkgName");
-			Log.i( TAG, "Prepare to unlock the app " + pkgName );
-			for( RunningAppInfo info : mLockList ){
-				if( info.getPkgName().compareTo(pkgName) == 0 ){
+			Log.i(TAG, "Prepare to unlock the app " + pkgName);
+			for (RunningAppInfo info : mLockList) {
+				if (info.getPkgName().compareTo(pkgName) == 0) {
 					info.setLocked(false);
 					break;
 				}
@@ -67,7 +68,7 @@ public class LongLiveService extends Service {
 		IntentFilter lockAllFilter = new IntentFilter();
 		lockAllFilter.addAction(LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
 		registerReceiver(lockAllReceiver, lockAllFilter);
-		
+
 		IntentFilter unlockFilter = new IntentFilter();
 		unlockFilter.addAction(LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
 		registerReceiver(unlockReceiver, unlockFilter);
@@ -87,25 +88,17 @@ public class LongLiveService extends Service {
 		handleStart();
 		return START_STICKY; // for restart this service..
 	}
-	
+
 	@Override
 	public void onStart(Intent intent, int startid) {
 		Log.i(TAG, "onStart");
 		handleStart();
 	}
-	
-	public void handleStart(){
+
+	public void handleStart() {
 		Resources r = this.getResources();
-		Notification notification = NotificationHelper.genNotification(
-											this.mContext, 
-											0, 
-											R.drawable.ic_launcher, 
-											"安全桌面已启动..", 
-											0, 
-											r.getString(R.string.notification_forground_service_title ), 
-											r.getString(R.string.notification_forground_service_text ), 
-											SwitchHomeActivity.class,
-											Notification.FLAG_FOREGROUND_SERVICE);
+		Notification notification = NotificationHelper.genNotification(this.mContext, 0, R.drawable.ic_launcher, "安全桌面已启动..", 0, r.getString(R.string.notification_forground_service_title),
+				r.getString(R.string.notification_forground_service_text), SwitchHomeActivity.class, Notification.FLAG_FOREGROUND_SERVICE);
 		startForeground(Notification.FLAG_FOREGROUND_SERVICE, notification);
 
 		mActivityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -120,7 +113,7 @@ public class LongLiveService extends Service {
 						long interval = System.currentTimeMillis() - curr;
 						long sleepingTime = (threadInterval - interval);
 						if (sleepingTime > 0) {
-							Log.d(TAG, "sleeping.." + sleepingTime + " ms.");
+							Log.d(TAG, "sleeping.." + sleepingTime + " ms. elapse:" + interval + " ms.");
 							Thread.sleep(sleepingTime);
 						}
 					} catch (InterruptedException e) {
@@ -133,21 +126,24 @@ public class LongLiveService extends Service {
 	}
 
 	private void doSth() {
+		boolean isSafeLauncherDefault = MyUtil.isLauncherDefault(mContext, SwitchHomeActivity.PKG_NAME);
+		Log.i(TAG, "is default?" + isSafeLauncherDefault);
+		// do nothing if safe launcher is running..
+		if (isSafeLauncherDefault)
+			return;
+		// else, prepare to lock
+
 		// 获取目前最顶层的Activity
 		ComponentName cn = mActivityManager.getRunningTasks(1).get(0).topActivity;
 		String pkgName = cn.getPackageName();
 		String className = cn.getClassName();
-		Log.d(TAG, "pkg:" + pkgName);
-		Log.d(TAG, "cls:" + className);
 
-		Log.d(TAG, "Running app is " + pkgName);
-
-		if( mLockList == null )
+		if (mLockList == null)
 			return;
-		
+
 		boolean isInTheList = false;
-		for( RunningAppInfo app: mLockList ){
-			if( app.isLocked() && app.getPkgName().compareTo( pkgName ) == 0){
+		for (RunningAppInfo app : mLockList) {
+			if (app.isLocked() && app.getPkgName().compareTo(pkgName) == 0) {
 				isInTheList = true;
 				break;
 			}
@@ -157,7 +153,8 @@ public class LongLiveService extends Service {
 		if (isInTheList) {
 			// show the desktop for killing the app
 			Intent i = new Intent(Intent.ACTION_MAIN);
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new task标识
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new
+														// task标识
 			i.addCategory(Intent.CATEGORY_HOME);
 			startActivity(i);
 
@@ -173,7 +170,7 @@ public class LongLiveService extends Service {
 			// kill the app, maybe doesn't work, don't know why...
 			Log.d(TAG, "prepare to kill:" + pkgName);
 			mActivityManager.killBackgroundProcesses(pkgName);
-//			mActivityManager.restartPackage(pkgName);
+			// mActivityManager.restartPackage(pkgName);
 		}
 	}
 
