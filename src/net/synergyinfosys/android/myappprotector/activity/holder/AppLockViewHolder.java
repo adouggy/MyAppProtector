@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
+import net.synergyinfosys.android.myappprotector.activity.SwitchHomeActivity;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import net.synergyinfosys.android.myappprotector.util.MyUtil;
@@ -53,22 +54,22 @@ public class AppLockViewHolder {
 	private OnCheckedChangeListener lockAllListener = new OnCheckedChangeListener() {
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
 			if (isChecked) {
 				// prepare to lock all in list..
 				// stay what it is..
 			} else {
 				// uncheck all
 				for( RunningAppInfo info: mApps ){
-					info.setLocked(false);
+					if( !info.isLauncher() )
+						info.setLocked(false);
+				}
+				if( mListView != null ){
+					((AppListAdapter)mListView.getAdapter()).notifyDataSetChanged();
 				}
 			}
-			broadcastIntent.putParcelableArrayListExtra("lockList", mApps);
-			mContext.sendBroadcast(broadcastIntent);
 			
-			if( mListView != null ){
-				((AppListAdapter)mListView.getAdapter()).notifyDataSetChanged();
-			}
+			sendLockBroadcast();
+			
 		}
 	};
 
@@ -82,15 +83,22 @@ public class AppLockViewHolder {
 		sAppLockAll.setOnCheckedChangeListener(lockAllListener);
 		sAppLock.setOnCheckedChangeListener(lockListener);
 
+		loadApps();
+		
 		if (MyUtil.isServiceRunning(this.mContext, LongLiveService.class.getName())) {
 			this.sAppLock.setChecked(true);
 		} else {
 			this.sAppLock.setChecked(false);
 		}
 
-		loadApps();
 		mListView = (ListView) mRootActivity.findViewById(R.id.applock_list);
 		mListView.setAdapter(new AppListAdapter());
+	}
+	
+	private void sendLockBroadcast(){
+		Intent broadcastIntent = new Intent(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
+		broadcastIntent.putParcelableArrayListExtra("lockList", mApps);
+		mContext.sendBroadcast(broadcastIntent);
 	}
 
 	class AppListAdapter extends BaseAdapter {
@@ -143,13 +151,23 @@ public class AppLockViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					Log.i(TAG, position + " changed to " + isChecked);
 					RunningAppInfo info = mApps.get(position);
-					info.setLocked(isChecked);
+					if( !info.isLauncher() )
+						info.setLocked(isChecked);
 					mApps.set(position, info);
 					notifyDataSetChanged();
+					sendLockBroadcast();
+					
+					if( info.isLocked() ){
+						sAppLockAll.setChecked(true);
+					}
 				}
 			});
-
-			holder.appName.setText( info.getAppLabel() );
+			
+			String extraStr = "";
+			if( info.isLauncher() ){
+				extraStr = "(桌面程序)";
+			}
+			holder.appName.setText( info.getAppLabel() + extraStr );
 			holder.appIcon.setBackground( info.getAppIcon() );
 			holder.appCheckBox.setChecked( info.isLocked() );
 			return convertView;
@@ -157,17 +175,39 @@ public class AppLockViewHolder {
 	}
 
 	private void loadApps() {
+		mApps = new ArrayList<RunningAppInfo>(); 
+
 		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
 		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		
 		List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
-		mApps = new ArrayList<RunningAppInfo>(); 
 		for( ResolveInfo info : list ){
 			RunningAppInfo a = new RunningAppInfo();
 			a.setAppIcon( info.activityInfo.loadIcon(mContext.getPackageManager()) );
 			a.setAppLabel( info.activityInfo.loadLabel(mContext.getPackageManager()).toString() );
 			a.setLocked( false );
 			a.setPkgName(info.activityInfo.packageName);
+			a.setLauncher(false);
 			mApps.add(a);
 		}
+		
+		//add other launcher lock
+		Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
+		launcherIntent.addCategory(Intent.CATEGORY_HOME);
+		List<ResolveInfo> launcherList = mContext.getPackageManager().queryIntentActivities(launcherIntent, 0);
+		for( ResolveInfo info : launcherList ){
+			//ingore safe launcher..
+			if( info.activityInfo.packageName.compareTo(SwitchHomeActivity.PKG_NAME) == 0 ){
+				continue;
+			}
+			RunningAppInfo a = new RunningAppInfo();
+			a.setAppIcon( info.activityInfo.loadIcon(mContext.getPackageManager()) );
+			a.setAppLabel( info.activityInfo.loadLabel(mContext.getPackageManager()).toString() );
+			a.setLocked( true );
+			a.setPkgName(info.activityInfo.packageName);
+			a.setLauncher(true);
+			mApps.add(0,a);
+		}
+		
 	}
 }

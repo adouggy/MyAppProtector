@@ -128,19 +128,40 @@ public class LongLiveService extends Service {
 	private void doSth() {
 		boolean isSafeLauncherDefault = MyUtil.isLauncherDefault(mContext, SwitchHomeActivity.PKG_NAME);
 		Log.i(TAG, "is default?" + isSafeLauncherDefault);
-		// do nothing if safe launcher is running..
-		if (isSafeLauncherDefault)
-			return;
-		// else, prepare to lock
 
 		// 获取目前最顶层的Activity
 		ComponentName cn = mActivityManager.getRunningTasks(1).get(0).topActivity;
 		String pkgName = cn.getPackageName();
 		String className = cn.getClassName();
+		Log.i(TAG, pkgName + " is on top");
 
 		if (mLockList == null)
 			return;
 
+		boolean isInTheList = findInAppList(pkgName);
+
+		// 如果在block list中
+		if (isInTheList) {
+			
+			// do nothing if safe launcher is running..
+			if (isSafeLauncherDefault) {
+				// unless other launcher is started..
+				// the principle is NO other launcher allowed to start when safe
+				// launcher is the default.
+				if( findLauncherInAppList(pkgName) ){
+					Log.i( TAG, "other launcher:" + pkgName + " started, kill now.." );
+					killAndLock(pkgName, className);
+				}
+				return;
+			}
+			// else, prepare to lock
+			else{
+				killAndLock(pkgName, className);
+			}
+		}
+	}
+
+	private boolean findInAppList(String pkgName) {
 		boolean isInTheList = false;
 		for (RunningAppInfo app : mLockList) {
 			if (app.isLocked() && app.getPkgName().compareTo(pkgName) == 0) {
@@ -148,30 +169,42 @@ public class LongLiveService extends Service {
 				break;
 			}
 		}
-
-		// 如果在block list中
-		if (isInTheList) {
-			// show the desktop for killing the app
-			Intent i = new Intent(Intent.ACTION_MAIN);
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new
-														// task标识
-			i.addCategory(Intent.CATEGORY_HOME);
-			startActivity(i);
-
-			// start login activity
-			Intent startLoginIntent = new Intent(mContext, PasswordActivity.class);
-			Bundle b = new Bundle();
-			b.putString("pkgName", pkgName);
-			b.putString("clsName", className);
-			startLoginIntent.putExtras(b);
-			startLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			mContext.startActivity(startLoginIntent);
-
-			// kill the app, maybe doesn't work, don't know why...
-			Log.d(TAG, "prepare to kill:" + pkgName);
-			mActivityManager.killBackgroundProcesses(pkgName);
-			// mActivityManager.restartPackage(pkgName);
+		return isInTheList;
+	}
+	
+	private boolean findLauncherInAppList(String pkgName){
+		boolean isInTheList = false;
+		for (RunningAppInfo app : mLockList) {
+//			System.out.println( app.getPkgName() + ", " + app.isLauncher() + ", " + app.isLocked() );
+			if (app.isLocked() && app.isLauncher() && app.getPkgName().compareTo(pkgName) == 0) {
+				isInTheList = true;
+				break;
+			}
 		}
+		return isInTheList;
+	}
+
+	private void killAndLock(String pkgName, String className) {
+		// show the desktop for killing the app
+		Intent i = new Intent(Intent.ACTION_MAIN);
+		// 如果是服务里调用，必须加入new task标识
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.addCategory(Intent.CATEGORY_HOME);
+		startActivity(i);
+
+		// start login activity
+		Intent startLoginIntent = new Intent(mContext, PasswordActivity.class);
+		Bundle b = new Bundle();
+		b.putString("pkgName", pkgName);
+		b.putString("clsName", className);
+		startLoginIntent.putExtras(b);
+		startLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mContext.startActivity(startLoginIntent);
+
+		// kill the app, maybe doesn't work, don't know why...
+		Log.d(TAG, "prepare to kill:" + pkgName);
+		mActivityManager.killBackgroundProcesses(pkgName);
+		// mActivityManager.restartPackage(pkgName);
 	}
 
 }

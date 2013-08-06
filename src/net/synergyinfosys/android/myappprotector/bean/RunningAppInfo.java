@@ -14,7 +14,16 @@ public class RunningAppInfo implements Parcelable {
 	private long rxkb;
 	private long txkb;
 	private boolean isLocked;
+	private boolean isLauncher;
 	
+	public boolean isLauncher() {
+		return isLauncher;
+	}
+
+	public void setLauncher(boolean isLauncher) {
+		this.isLauncher = isLauncher;
+	}
+
 	public boolean isLocked() {
 		return isLocked;
 	}
@@ -100,6 +109,7 @@ public class RunningAppInfo implements Parcelable {
 			info.setTxkb(in.readLong());
 			info.setPkgName(in.readString());
 			info.setLocked(in.readByte() == 1);
+			info.setLauncher(in.readByte() == 1);
 			return info;
 		}
 
@@ -120,5 +130,6 @@ public class RunningAppInfo implements Parcelable {
 		dest.writeLong(this.txkb);
 		dest.writeString(this.pkgName);
 		dest.writeByte((byte) (isLocked ? 1 : 0));
+		dest.writeByte((byte)(isLauncher ? 1 : 0));
 	}
 }

@@ -3,6 +3,7 @@ package net.synergyinfosys.android.myappprotector.activity.holder;
 import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,23 +22,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AppGridViewHolder{
+public class AppGridViewHolder {
 
 	public static final String TAG = "AppListViewHolder";
-	
+
 	private GridView mGrid;
-	
+
 	private Activity mRootActivity = null;
 	private Context mContext = null;
-	
+
 	private List<ResolveInfo> mApps;
-	
-	public AppGridViewHolder(Activity act){
+
+	private List<RunningAppInfo> mHideList;
+
+	public AppGridViewHolder(Activity act) {
 		this.mRootActivity = act;
 		this.mContext = mRootActivity.getApplicationContext();
-		
+
 		loadApps();
-		
+
 		mGrid = (GridView) mRootActivity.findViewById(R.id.app_list);
 		mGrid.setAdapter(new AppAdapter());
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
@@ -63,34 +65,40 @@ public class AppGridViewHolder{
 
 		});
 	}
-	
+
 	private void loadApps() {
 		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
 		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		mApps = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
-		Log.i(TAG, "Got apps:");
-		for (ResolveInfo r : mApps) {
-			Log.i(TAG, r.activityInfo.name);
-		}
+		// Log.i(TAG, "Got apps:");
+		// for (ResolveInfo r : mApps) {
+		// Log.i(TAG, r.activityInfo.name);
+		// }
 	}
 
-	
+	public void hideApps(List<RunningAppInfo> list) {
+		if (mApps == null || list == null)
+			return;
+
+		this.mHideList = list;
+		
+		((AppAdapter)this.mGrid.getAdapter()).notifyDataSetChanged();
+	}
+
 	private boolean isLocked(String pkgName) {
-		return true;
+		if( mHideList == null )
+			return false;
+		
+		for (RunningAppInfo info : mHideList) {
+			if (info.isLocked() && info.getPkgName().compareTo(pkgName) == 0) {
+				return true;
+			}
+		}
 
-		// Iterator<String> iter = lockList.keySet().iterator();
-		// while( iter.hasNext() ){
-		// String key = iter.next();
-		// if( key.compareTo(pkgName) == 0 ){
-		// return true;
-		// }
-		// }
-		//
-		// return false;
+		return false;
 	}
-	
-	class AppAdapter extends BaseAdapter {
 
+	class AppAdapter extends BaseAdapter {
 		private PackageManager mPM = null;
 
 		private class GridHolder {

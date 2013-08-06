@@ -9,11 +9,14 @@ import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.activity.holder.AppGridViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.AppLockViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.NetWatcherViewHolder;
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +51,17 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 	// for app lock control
 	AppLockViewHolder mAppLockHolder = null;
+	
+	ArrayList<RunningAppInfo> mLockList = null;
+	
+	private final BroadcastReceiver lockAllReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			Log.i(TAG, "Prepare to lock the selected");
+			mLockList = intent.getParcelableArrayListExtra("lockList");
+			mAppListHolder.hideApps(mLockList);
+		}
+	};
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -118,6 +132,16 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 		View rootView = imgForDial.getRootView();
 		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
+		
+		IntentFilter lockAllFilter = new IntentFilter();
+		lockAllFilter.addAction(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
+		registerReceiver(lockAllReceiver, lockAllFilter);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(lockAllReceiver);
 	}
 
 	@Override
@@ -156,7 +180,8 @@ public class HomeActivity extends Activity implements OnClickListener {
 	}
 	
 	/**
-	 * 这里先偷懒，在安全桌面下后退就是回到桌面本身 Laucher pro后退建貌似也是自己阻塞了，会打印一堆奇怪的log
+	 * 这里先偷懒，在安全桌面下后退就是回到桌面本身 Laucher pro后退建貌似也是自己阻塞了，
+	 * 会打印一堆奇怪的log <-- seems a problem under api 17
 	 */
 	@Override
 	public void onBackPressed() {
