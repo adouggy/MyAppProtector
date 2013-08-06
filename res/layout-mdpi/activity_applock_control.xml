@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="20dp"
+    android:paddingTop="30dp"
+    android:orientation="vertical" >
+
+    <Switch
+        android:id="@+id/switch_applock"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/applock_text"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp" />
+    
+    <Switch
+        android:id="@+id/applock_mdm"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/applock_mdm"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp" />
+    
+    <Switch
+        android:id="@+id/applock_lockall"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/applock_lockAll"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp" />
+
+    <ListView 
+        android:id="@+id/applock_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
+
+</LinearLayout>
