@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 
 public class MyUtil {
 	/**
@@ -92,5 +94,21 @@ public class MyUtil {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * per sdk
+	 * 
+	 * @param img
+	 * @param d
+	 */
+	@SuppressWarnings("deprecation")
+	public static void setBackground(View img, Drawable d){
+	    int sysVersion = android.os.Build.VERSION.SDK_INT;
+	    if( sysVersion <= 16){
+	    	img.setBackgroundDrawable(d);
+	    }else{
+	    	img.setBackground( d );
+	    }
 	}
 }

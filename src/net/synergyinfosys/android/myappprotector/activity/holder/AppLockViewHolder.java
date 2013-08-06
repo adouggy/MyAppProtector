@@ -168,7 +168,8 @@ public class AppLockViewHolder {
 				extraStr = "(桌面程序)";
 			}
 			holder.appName.setText( info.getAppLabel() + extraStr );
-			holder.appIcon.setBackground( info.getAppIcon() );
+//			holder.appIcon.setBackground( info.getAppIcon() );
+			MyUtil.setBackground( holder.appIcon, info.getAppIcon());
 			holder.appCheckBox.setChecked( info.isLocked() );
 			return convertView;
 		}

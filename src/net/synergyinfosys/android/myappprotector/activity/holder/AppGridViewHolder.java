@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
+import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -143,7 +144,8 @@ public class AppGridViewHolder {
 			String pkgName = info.activityInfo.packageName;
 
 			Drawable d = info.activityInfo.loadIcon(mPM);
-			holder.appImage.setBackground(d);
+//			holder.appImage.setBackground(d);
+			MyUtil.setBackground(holder.appImage, d);
 			if ( mHideList != null && !isLocked(pkgName)) {
 //				d.setAlpha(50);
 			}

@@ -10,8 +10,8 @@ import net.synergyinfosys.android.myappprotector.activity.holder.AppGridViewHold
 import net.synergyinfosys.android.myappprotector.activity.holder.AppLockViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.NetWatcherViewHolder;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
-import net.synergyinfosys.android.myappprotector.service.BootReceiver;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
+import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -88,29 +88,33 @@ public class HomeActivity extends Activity implements OnClickListener {
 		
 		imgForDial = (ImageView) findViewById(R.id.imageView_forDial);
 		imgForDial.setOnClickListener(this);
-		if (mDialApp != null) {
-			imgForDial.setBackground(mDialApp.activityInfo.loadIcon(getPackageManager()));
+		if (mDialApp != null && imgForDial != null) {
+//			imgForDial.setBackground(mDialApp.activityInfo.loadIcon(getPackageManager()));
+			MyUtil.setBackground(imgForDial, mDialApp.activityInfo.loadIcon(getPackageManager()));
 			imgForDial.invalidate();
 		}
 
 		imgForSMS = (ImageView) findViewById(R.id.imageView_forSMS);
 		imgForSMS.setOnClickListener(this);
-		if (mSMSApp != null) {
-			imgForSMS.setBackground(mSMSApp.activityInfo.loadIcon(getPackageManager()));
+		if (mSMSApp != null && imgForSMS != null) {
+//			imgForSMS.setBackground(mSMSApp.activityInfo.loadIcon(getPackageManager()));
+			MyUtil.setBackground(imgForSMS, mSMSApp.activityInfo.loadIcon(getPackageManager()));
 			imgForSMS.invalidate();
 		}
 		
 		imgForEmail = (ImageView) findViewById( R.id.imageView_forEmail );
 		imgForEmail.setOnClickListener(this);
-		if( mEmailApp != null ){
-			imgForEmail.setBackground( mEmailApp.activityInfo.loadIcon(getPackageManager()) );
+		if( mEmailApp != null && imgForEmail != null ){
+//			imgForEmail.setBackground( mEmailApp.activityInfo.loadIcon(getPackageManager()) );
+			MyUtil.setBackground(imgForEmail, mEmailApp.activityInfo.loadIcon(getPackageManager()));
 			imgForEmail.invalidate();
 		}
 		
 		imgForWeb = (ImageView) findViewById( R.id.imageView_forWeb );
 		imgForWeb.setOnClickListener(this);
-		if( mWebApp != null ){
-			imgForWeb.setBackground( mWebApp.activityInfo.loadIcon(getPackageManager()) );
+		if( mWebApp != null && imgForWeb != null){
+//			imgForWeb.setBackground( mWebApp.activityInfo.loadIcon(getPackageManager()) );
+			MyUtil.setBackground(imgForWeb, mWebApp.activityInfo.loadIcon(getPackageManager()));
 			imgForWeb.invalidate();
 		}
 
@@ -131,7 +135,8 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 
 		View rootView = imgForDial.getRootView();
-		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
+//		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
+		MyUtil.setBackground(rootView, this.mContext.getResources().getDrawable(R.drawable.synergy));
 		
 		IntentFilter lockAllFilter = new IntentFilter();
 		lockAllFilter.addAction(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
