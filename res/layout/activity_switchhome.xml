@@ -13,17 +13,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+        <!-- 
         <Button
             android:id="@+id/button_pick_default"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="切换回默认桌面" />
-        
+         -->
         <Button
             android:id="@+id/button_clear_default"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="清除所有默认" />
+            android:text="重设默认值" />
 
         <ListView
             android:id="@+id/list_launcher"

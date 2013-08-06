@@ -11,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:scaleType="fitXY"
-        android:contentDescription="blah.." >
+        android:contentDescription="@string/content_description" >
     </ImageView>
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/ItemImage"
         android:layout_centerVertical="true"
-        android:text="xxxxx" >
+        >
     </TextView>
     
     <Button 
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:text="Switch"
+        android:text="@string/switch_text"
         android:focusable="false"
         />
 

@@ -101,10 +101,10 @@ public class PasswordActivity extends Activity implements OnClickListener{
 					controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
 				}
 
-				if (visible && AUTO_HIDE) {
-					// Schedule a hide().
-					delayedHide(AUTO_HIDE_DELAY_MILLIS);
-				}
+//				if (visible && AUTO_HIDE) {
+//					// Schedule a hide().
+//					delayedHide(AUTO_HIDE_DELAY_MILLIS);
+//				}
 			}
 		});
 

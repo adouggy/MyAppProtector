@@ -154,7 +154,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 			mWebApp = list.get(0);
 		}
 	}
-
+	
 	/**
 	 * 这里先偷懒，在安全桌面下后退就是回到桌面本身 Laucher pro后退建貌似也是自己阻塞了，会打印一堆奇怪的log
 	 */
