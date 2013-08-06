@@ -26,6 +26,7 @@ public class LongLiveService extends Service {
 	public static final String TAG = "LongLiveService";
 	public static final String LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION = "LongLiveService.broadcast.lockall";
 	public static final String LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION = "LongLiveService.broadcast.unlock";
+	public static final String LONGLIVESERVICE_BROADCAST_START_SERVICE = "LongLiveService.broadcast.start.service";
 
 	ActivityManager mActivityManager = null;
 	long threadInterval = 1000;
@@ -72,6 +73,7 @@ public class LongLiveService extends Service {
 		IntentFilter unlockFilter = new IntentFilter();
 		unlockFilter.addAction(LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
 		registerReceiver(unlockReceiver, unlockFilter);
+		
 	}
 
 	@Override
@@ -142,20 +144,20 @@ public class LongLiveService extends Service {
 
 		// 如果在block list中
 		if (isInTheList) {
-			
+
 			// do nothing if safe launcher is running..
 			if (isSafeLauncherDefault) {
 				// unless other launcher is started..
 				// the principle is NO other launcher allowed to start when safe
 				// launcher is the default.
-				if( findLauncherInAppList(pkgName) ){
-					Log.i( TAG, "other launcher:" + pkgName + " started, kill now.." );
+				if (findLauncherInAppList(pkgName)) {
+					Log.i(TAG, "other launcher:" + pkgName + " started, kill now..");
 					killAndLock(pkgName, className);
 				}
 				return;
 			}
 			// else, prepare to lock
-			else{
+			else {
 				killAndLock(pkgName, className);
 			}
 		}
@@ -171,11 +173,12 @@ public class LongLiveService extends Service {
 		}
 		return isInTheList;
 	}
-	
-	private boolean findLauncherInAppList(String pkgName){
+
+	private boolean findLauncherInAppList(String pkgName) {
 		boolean isInTheList = false;
 		for (RunningAppInfo app : mLockList) {
-//			System.out.println( app.getPkgName() + ", " + app.isLauncher() + ", " + app.isLocked() );
+			// System.out.println( app.getPkgName() + ", " + app.isLauncher() +
+			// ", " + app.isLocked() );
 			if (app.isLocked() && app.isLauncher() && app.getPkgName().compareTo(pkgName) == 0) {
 				isInTheList = true;
 				break;

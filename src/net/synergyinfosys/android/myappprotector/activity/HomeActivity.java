@@ -10,6 +10,7 @@ import net.synergyinfosys.android.myappprotector.activity.holder.AppGridViewHold
 import net.synergyinfosys.android.myappprotector.activity.holder.AppLockViewHolder;
 import net.synergyinfosys.android.myappprotector.activity.holder.NetWatcherViewHolder;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
+import net.synergyinfosys.android.myappprotector.service.BootReceiver;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -128,7 +129,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 		mViewPager.setAdapter(this.pagerAdapter);
 		mViewPager.setCurrentItem(1);
 
-		startService(new Intent(this, LongLiveService.class));
 
 		View rootView = imgForDial.getRootView();
 		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
@@ -136,6 +136,11 @@ public class HomeActivity extends Activity implements OnClickListener {
 		IntentFilter lockAllFilter = new IntentFilter();
 		lockAllFilter.addAction(LongLiveService.LONGLIVESERVICE_BROADCAST_LOCKALL_ACTION);
 		registerReceiver(lockAllReceiver, lockAllFilter);
+		
+		//start the SERVICE!!
+		
+		startService(new Intent(this, LongLiveService.class));
+//		BootReceiver.registerAlarmStart(this.getApplicationContext())
 	}
 	
 	@Override

@@ -121,8 +121,8 @@ public class NetWatcherViewHolder {
 			RunningAppInfo info = mInfoList.get(position);
 			
 			holder.appName.setText(info.getAppLabel());
-			holder.download.setText(String.valueOf( info.getRxkb() ));
-			holder.upload.setText(String.valueOf( info.getTxkb() ));
+			holder.download.setText(String.valueOf( info.getRxkb() ) + "kb");
+			holder.upload.setText(String.valueOf( info.getTxkb() ) + "kb");
 			
 			return convertView;
 		}

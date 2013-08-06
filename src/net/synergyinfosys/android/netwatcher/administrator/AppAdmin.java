@@ -39,8 +39,8 @@ public class AppAdmin {
 		List<ActivityManager.RunningAppProcessInfo> appProcessList = mActivityManager.getRunningAppProcesses();
 
 		for (ActivityManager.RunningAppProcessInfo appProcess : appProcessList) {
-			int pid = appProcess.pid; // pid
-			String processName = appProcess.processName; // 进程名
+//			int pid = appProcess.pid; // pid
+//			String processName = appProcess.processName; // 进程名
 //			Log.i(TAG, "processName: " + processName + "  pid: " + pid);
 
 			String[] pkgNameList = appProcess.pkgList; // 获得运行在该进程里的所有应用程序包

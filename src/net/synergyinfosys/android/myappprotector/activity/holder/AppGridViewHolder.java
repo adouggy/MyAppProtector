@@ -52,7 +52,7 @@ public class AppGridViewHolder {
 				String cls = info.activityInfo.name;
 
 				if (!isLocked(pkg)) {
-					Toast.makeText(mContext, "Already locked.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext, "未被保护", Toast.LENGTH_SHORT).show();
 				} else {
 					// 启动
 					ComponentName component = new ComponentName(pkg, cls);
@@ -81,14 +81,10 @@ public class AppGridViewHolder {
 			return;
 
 		this.mHideList = list;
-		
 		((AppAdapter)this.mGrid.getAdapter()).notifyDataSetChanged();
 	}
 
 	private boolean isLocked(String pkgName) {
-		if( mHideList == null )
-			return false;
-		
 		for (RunningAppInfo info : mHideList) {
 			if (info.isLocked() && info.getPkgName().compareTo(pkgName) == 0) {
 				return true;
@@ -146,13 +142,10 @@ public class AppGridViewHolder {
 			ResolveInfo info = mApps.get(position);
 			String pkgName = info.activityInfo.packageName;
 
-			if (!isLocked(pkgName)) {
-				Drawable d = info.activityInfo.loadIcon(mPM);
-				d.setAlpha(50);
-				holder.appImage.setBackground(d);
-			} else {
-				Drawable d = info.activityInfo.loadIcon(mPM);
-				holder.appImage.setBackground(d);
+			Drawable d = info.activityInfo.loadIcon(mPM);
+			holder.appImage.setBackground(d);
+			if ( mHideList != null && !isLocked(pkgName)) {
+//				d.setAlpha(50);
 			}
 
 			holder.appName.setText(info.activityInfo.loadLabel(mPM));
