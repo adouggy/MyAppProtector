@@ -1,17 +1,15 @@
 package net.synergyinfosys.android.myappprotector.activity.holder;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import net.synergyinfosys.android.myappprotector.R;
-import net.synergyinfosys.android.myappprotector.activity.SwitchHomeActivity;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.service.LongLiveService;
+import net.synergyinfosys.android.myappprotector.service.WatcherService;
 import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +31,8 @@ public class AppLockViewHolder {
 
 	private Switch sAppLock;
 	private Switch sAppLockAll;
-
+	private Switch sNetWatcher;
+	
 	private ArrayList<RunningAppInfo> mApps = null;
 
 	private ListView mListView = null;
@@ -83,7 +82,7 @@ public class AppLockViewHolder {
 		sAppLockAll.setOnCheckedChangeListener(lockAllListener);
 		sAppLock.setOnCheckedChangeListener(lockListener);
 
-		loadApps();
+		this.mApps = MyUtil.loadApps(this.mContext);
 		
 		if (MyUtil.isServiceRunning(this.mContext, LongLiveService.class.getName())) {
 			this.sAppLock.setChecked(true);
@@ -93,6 +92,28 @@ public class AppLockViewHolder {
 
 		mListView = (ListView) mRootActivity.findViewById(R.id.applock_list);
 		mListView.setAdapter(new AppListAdapter());
+		
+		sNetWatcher = (Switch) mRootActivity.findViewById(R.id.switch_netwatcher);
+		
+		
+		sNetWatcher.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if( isChecked ){
+					Log.d(TAG, "\tstart netwatcher clicked.");
+					mContext.startService(new Intent(mContext, WatcherService.class));
+				}else{
+					Log.d(TAG, "\tstop netwatcher clicked.");
+					mContext.stopService(new Intent(mContext, WatcherService.class));
+				}
+			}
+		});
+
+		if( MyUtil.isServiceRunning(this.mContext, WatcherService.class.getName()) ){
+			this.sNetWatcher.setChecked(true);
+		}else{
+			this.sNetWatcher.setChecked(false);
+		}
 	}
 	
 	private void sendLockBroadcast(){
@@ -173,42 +194,5 @@ public class AppLockViewHolder {
 			holder.appCheckBox.setChecked( info.isLocked() );
 			return convertView;
 		}
-	}
-
-	private void loadApps() {
-		mApps = new ArrayList<RunningAppInfo>(); 
-
-		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		
-		List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
-		for( ResolveInfo info : list ){
-			RunningAppInfo a = new RunningAppInfo();
-			a.setAppIcon( info.activityInfo.loadIcon(mContext.getPackageManager()) );
-			a.setAppLabel( info.activityInfo.loadLabel(mContext.getPackageManager()).toString() );
-			a.setLocked( false );
-			a.setPkgName(info.activityInfo.packageName);
-			a.setLauncher(false);
-			mApps.add(a);
-		}
-		
-		//add other launcher lock
-		Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
-		launcherIntent.addCategory(Intent.CATEGORY_HOME);
-		List<ResolveInfo> launcherList = mContext.getPackageManager().queryIntentActivities(launcherIntent, 0);
-		for( ResolveInfo info : launcherList ){
-			//ingore safe launcher..
-			if( info.activityInfo.packageName.compareTo(SwitchHomeActivity.PKG_NAME) == 0 ){
-				continue;
-			}
-			RunningAppInfo a = new RunningAppInfo();
-			a.setAppIcon( info.activityInfo.loadIcon(mContext.getPackageManager()) );
-			a.setAppLabel( info.activityInfo.loadLabel(mContext.getPackageManager()).toString() );
-			a.setLocked( true );
-			a.setPkgName(info.activityInfo.packageName);
-			a.setLauncher(true);
-			mApps.add(0,a);
-		}
-		
 	}
 }

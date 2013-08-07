@@ -5,22 +5,17 @@ import java.util.ArrayList;
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
 import net.synergyinfosys.android.myappprotector.service.WatcherService;
-import net.synergyinfosys.android.myappprotector.util.MyUtil;
 import net.synergyinfosys.android.netwatcher.receiver.NetThroughputReceiver;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 public class NetWatcherViewHolder {
@@ -30,7 +25,7 @@ public class NetWatcherViewHolder {
 	private Activity mRootActivity;
 	private Context mContext;
 	
-	private Switch sNetWatcher;
+	
 	private ListView mList;
 	private ArrayList<RunningAppInfo> mInfoList = new ArrayList<RunningAppInfo>();
 	
@@ -46,32 +41,14 @@ public class NetWatcherViewHolder {
 		this.mRootActivity = act;
 		this.mContext = act.getApplicationContext();
 		
-		sNetWatcher = (Switch) mRootActivity.findViewById(R.id.switch_netwatcher);
 		mList = (ListView) mRootActivity.findViewById(R.id.listView_net_status);
 		mList.setAdapter( new  NetWatcherAdapter());
 		
-		sNetWatcher.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if( isChecked ){
-					Log.d(TAG, "\tstart netwatcher clicked.");
-					mContext.startService(new Intent(mContext, WatcherService.class));
-				}else{
-					Log.d(TAG, "\tstop netwatcher clicked.");
-					mContext.stopService(new Intent(mContext, WatcherService.class));
-				}
-			}
-		});
-
 		IntentFilter throughputFilter = new IntentFilter(WatcherService.INTENT_ACTION);
 		BroadcastReceiver throughtputReciever = new NetThroughputReceiver(this);
 		mContext.registerReceiver(throughtputReciever, throughputFilter);
 		
-		if( MyUtil.isServiceRunning(this.mContext, WatcherService.class.getName()) ){
-			this.sNetWatcher.setChecked(true);
-		}else{
-			this.sNetWatcher.setChecked(false);
-		}
+		
 	}
 	
 	class NetWatcherAdapter extends BaseAdapter {

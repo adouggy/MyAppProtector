@@ -13,8 +13,8 @@
         android:layout_height="20dp"
         android:layout_alignParentLeft="true"
         android:contentDescription="@string/applock_list_description"
-        android:paddingLeft="15dp"
-        android:scaleType="centerInside" />
+        android:layout_marginLeft="5dp"
+        android:scaleType="fitCenter" />
 
     <TextView 
         android:id="@+id/applock_list_label"

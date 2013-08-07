@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class PasswordActivity extends Activity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_password);
 
 		final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -227,6 +228,13 @@ public class PasswordActivity extends Activity implements OnClickListener{
 			bundle.putString("pkgName", pkgName);
 			unlockBroadcastIntent.putExtras(bundle);
 			sendBroadcast(unlockBroadcastIntent); 
+			
+			try {
+				Thread.sleep(LongLiveService.threadInterval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			
 			Intent startPackageIntent = new Intent(Intent.ACTION_MAIN);
 			startPackageIntent.addCategory(Intent.CATEGORY_LAUNCHER);

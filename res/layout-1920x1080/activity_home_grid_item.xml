@@ -8,7 +8,7 @@
                android:id="@+id/ItemImage"   
                android:layout_width="60dp"
                android:layout_height="60dp"
-               android:scaleType="centerInside"   
+               android:scaleType="fitCenter"   
                android:layout_centerHorizontal="true">   
          </ImageView>  
          <TextView   

@@ -13,11 +13,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -29,7 +29,6 @@ import android.widget.TextView;
 public class SwitchHomeActivity extends Activity implements OnClickListener, OnItemClickListener {
 
 	public static final String TAG = "MyHomeSwitcher.MainActivity";
-	public static final String PKG_NAME = "net.synergyinfosys.android.myappprotector";
 
 	Button mBtnClearDefault;
 	ListView mListView;
@@ -41,10 +40,12 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_switchhome);
+		
 		mActivityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		mPackageManager = getPackageManager();
-		mLauncherList = getAllLauncher();
+		mLauncherList = MyUtil.getAllLauncher(this.getApplicationContext());
 
 		mBtnClearDefault = (Button) findViewById(R.id.button_clear_default);
 		mBtnClearDefault.setOnClickListener(this);
@@ -58,32 +59,12 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button_clear_default:
-			ComponentName localComponentName = new ComponentName(PKG_NAME, FakeHome.class.getName());
-			getPackageManager().setComponentEnabledSetting(localComponentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-			Intent localIntent = new Intent("android.intent.action.MAIN");
-			localIntent.addCategory("android.intent.category.HOME");
-			startActivity(localIntent);
-			getPackageManager().setComponentEnabledSetting(localComponentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+			MyUtil.clearDefaultLauncer(this.getApplicationContext());
 			break;
 		}
 	}
 
-	private List<ResolveInfo> getAllLauncher() {
-		Intent launcher = new Intent();
-		launcher.addCategory(Intent.CATEGORY_HOME);
-		launcher.setAction(Intent.ACTION_MAIN);
-
-		List<ResolveInfo> list = mPackageManager.queryIntentActivities(launcher, 0);
-		// for( ResolveInfo r : list ){
-		// System.out.println( r.activityInfo.packageName );
-		// System.out.println( r.activityInfo.name );
-		// System.out.println();
-		// }
-		return list;
-	}
-
 	public class LaucherListAdapter extends BaseAdapter {
-
 		private class ItemHolder {
 			ImageView appImage;
 			TextView appName;
@@ -144,10 +125,10 @@ public class SwitchHomeActivity extends Activity implements OnClickListener, OnI
 			holder.switchButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Log.i(TAG, appName);
-					Log.i(TAG, pkgName);
-					Log.i(TAG, clsName);
-					Log.i(TAG, ">>>>>>>>>>");
+//					Log.i(TAG, appName);
+//					Log.i(TAG, pkgName);
+//					Log.i(TAG, clsName);
+//					Log.i(TAG, ">>>>>>>>>>");
 					ComponentName cn = new ComponentName(pkgName, clsName);
 					Intent i = new Intent();
 					i.setComponent(cn);

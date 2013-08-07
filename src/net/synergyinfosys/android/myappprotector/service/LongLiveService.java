@@ -1,6 +1,7 @@
 package net.synergyinfosys.android.myappprotector.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.synergyinfosys.android.myappprotector.R;
 import net.synergyinfosys.android.myappprotector.activity.PasswordActivity;
@@ -29,10 +30,15 @@ public class LongLiveService extends Service {
 	public static final String LONGLIVESERVICE_BROADCAST_START_SERVICE = "LongLiveService.broadcast.start.service";
 
 	ActivityManager mActivityManager = null;
-	long threadInterval = 1000;
+	public static final long threadInterval = 1000;
 	Context mContext = null;
 
 	ArrayList<RunningAppInfo> mLockList = null;
+
+	/**
+	 * 每次在安全桌面上点击一次，发一个广播，收到广播后在这里记一个时间戳 短时间内如果扫描到这个程序在运行，就让他继续运行。 否则发现在运行就杀掉
+	 */
+	HashMap<String, Long> mAppStartMap = new HashMap<String, Long>();
 
 	private final BroadcastReceiver lockAllReceiver = new BroadcastReceiver() {
 		@Override
@@ -56,6 +62,15 @@ public class LongLiveService extends Service {
 		}
 	};
 
+	private final BroadcastReceiver startFromSafeLauncherReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String pkgName = intent.getStringExtra("pkgName");
+			Log.i(TAG, "safe start:" + pkgName);
+			mAppStartMap.put(pkgName, System.currentTimeMillis());
+		}
+	};
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -73,7 +88,6 @@ public class LongLiveService extends Service {
 		IntentFilter unlockFilter = new IntentFilter();
 		unlockFilter.addAction(LONGLIVESERVICE_BROADCAST_UNLOCK_ACTION);
 		registerReceiver(unlockReceiver, unlockFilter);
-		
 	}
 
 	@Override
@@ -81,6 +95,7 @@ public class LongLiveService extends Service {
 		Log.i(TAG, "onDestroy");
 		unregisterReceiver(lockAllReceiver);
 		unregisterReceiver(unlockReceiver);
+		unregisterReceiver(startFromSafeLauncherReceiver);
 		stopForeground(true);
 	}
 
@@ -128,38 +143,27 @@ public class LongLiveService extends Service {
 	}
 
 	private void doSth() {
-		boolean isSafeLauncherDefault = MyUtil.isLauncherDefault(mContext, SwitchHomeActivity.PKG_NAME);
-		Log.i(TAG, "is default?" + isSafeLauncherDefault);
+		boolean isSafeLauncherDefault = MyUtil.isLauncherDefault(mContext, MyUtil.PKG_NAME);
+		Log.d(TAG, "is default?" + isSafeLauncherDefault);
 
 		// 获取目前最顶层的Activity
 		ComponentName cn = mActivityManager.getRunningTasks(1).get(0).topActivity;
 		String pkgName = cn.getPackageName();
 		String className = cn.getClassName();
-		Log.i(TAG, pkgName + " is on top");
+		Log.d(TAG, pkgName + " is on top");
 
 		if (mLockList == null)
 			return;
 
 		boolean isInTheList = findInAppList(pkgName);
 
+		/***
+		 * 无论哪个桌面是default，只要安全桌面在运行，就锁定列表中的程序
+		 */
 		// 如果在block list中
 		if (isInTheList) {
-
-			// do nothing if safe launcher is running..
-			if (isSafeLauncherDefault) {
-				// unless other launcher is started..
-				// the principle is NO other launcher allowed to start when safe
-				// launcher is the default.
-				if (findLauncherInAppList(pkgName)) {
-					Log.i(TAG, "other launcher:" + pkgName + " started, kill now..");
-					killAndLock(pkgName, className);
-				}
-				return;
-			}
-			// else, prepare to lock
-			else {
-				killAndLock(pkgName, className);
-			}
+			Log.i(TAG, pkgName + " in the list");
+			killAndLock(pkgName, className);
 		}
 	}
 
@@ -174,18 +178,19 @@ public class LongLiveService extends Service {
 		return isInTheList;
 	}
 
-	private boolean findLauncherInAppList(String pkgName) {
-		boolean isInTheList = false;
-		for (RunningAppInfo app : mLockList) {
-			// System.out.println( app.getPkgName() + ", " + app.isLauncher() +
-			// ", " + app.isLocked() );
-			if (app.isLocked() && app.isLauncher() && app.getPkgName().compareTo(pkgName) == 0) {
-				isInTheList = true;
-				break;
-			}
-		}
-		return isInTheList;
-	}
+	// private boolean findLauncherInAppList(String pkgName) {
+	// boolean isInTheList = false;
+	// for (RunningAppInfo app : mLockList) {
+	// // System.out.println( app.getPkgName() + ", " + app.isLauncher() +
+	// // ", " + app.isLocked() );
+	// if (app.isLocked() && app.isLauncher() &&
+	// app.getPkgName().compareTo(pkgName) == 0) {
+	// isInTheList = true;
+	// break;
+	// }
+	// }
+	// return isInTheList;
+	// }
 
 	private void killAndLock(String pkgName, String className) {
 		// show the desktop for killing the app

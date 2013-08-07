@@ -13,8 +13,16 @@
         android:text="@string/applock_text"
         android:paddingLeft="20dp"
         android:paddingRight="15dp"
-        android:paddingTop="15dp"
         android:paddingBottom="10dp" />
+    
+    <Switch
+        android:id="@+id/switch_netwatcher"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/netwatcher_text"
+        android:paddingLeft="20dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="15dp" />
     
     <Switch
         android:id="@+id/applock_mdm"
@@ -23,7 +31,6 @@
         android:text="@string/applock_mdm"
         android:paddingLeft="20dp"
         android:paddingRight="15dp"
-        android:paddingTop="10dp"
         android:paddingBottom="15dp" />
     
     <Switch
@@ -33,7 +40,6 @@
         android:text="@string/applock_lockAll"
         android:paddingLeft="20dp"
         android:paddingRight="15dp"
-        android:paddingTop="10dp"
         android:paddingBottom="15dp" />
 
     <ListView 

@@ -45,7 +45,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 	
 	//for dock
 	private ResolveInfo mCameraApp, mVideoApp, mEmailApp, mWebApp;
-	private ImageView imgForCamera = null, imgForVideo = null, imgForEmail = null, imgForWeb = null;
+	private ImageView imgForCamera = null, imgForVideo = null, imgForEmail = null, imgForWeb = null, imgForExit = null;
 	AppGridViewHolder mAppListHolder = null;
 	
 	//for net watcher
@@ -110,6 +110,9 @@ public class HomeActivity extends Activity implements OnClickListener {
 		if( mWebApp != null && imgForWeb != null){
 			MyUtil.setBackground(imgForWeb, mWebApp.activityInfo.loadIcon(getPackageManager()));
 		}
+		
+		imgForExit = (ImageView) findViewById( R.id.imageView_exit );
+		imgForExit.setOnClickListener(this);
 
 		LayoutInflater lf = LayoutInflater.from(this);
 		View viewGrid = lf.inflate(R.layout.activity_home_grid, null);
@@ -203,10 +206,32 @@ public class HomeActivity extends Activity implements OnClickListener {
 			Log.i(TAG, "start Email..");
 			startActivity( generateEmailIntent() );
 			break;
-			
 		case R.id.imageView_forWeb:
 			Log.i(TAG, "start WEB..");
 			startActivity( generateWebIntent() );
+			break;
+		case R.id.imageView_exit:
+			Log.i(TAG, "exit..");
+			
+			//重置默认桌面
+//			MyUtil.clearDefaultLauncer(this.getApplicationContext());
+			
+			//只要不是安全桌面，随便找一个就走起
+			List<ResolveInfo> list = MyUtil.getAllLauncher(this.getApplicationContext());
+			for( ResolveInfo info : list ){
+				final String pkgName = info.activityInfo.packageName;
+				final String clsName = info.activityInfo.name;
+				
+				
+				if( pkgName.compareTo(MyUtil.PKG_NAME) != 0 ){
+					ComponentName cn = new ComponentName(pkgName, clsName);
+					Intent i = new Intent();
+					i.setComponent(cn);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(i);
+					break;
+				}
+			}
 			break;
 		}
 	}

@@ -15,7 +15,7 @@
     <string name="home_introduction">新能聚信安全桌面\n\n#快速桌面切换\n#保护办公数据\n#监控网络连接\n#应用加锁与隔离\n#MDM管理系统\n</string>
     <string name="applock_text">安全桌面监管服务</string>
      <string name="applock_mdm">MDM服务</string>
-    <string name="applock_lockAll">解除/锁定 已选应用</string>
+    <string name="applock_lockAll">保护选定应用</string>
     <string name="applock_list_description">缩略图</string>
     <string name="netwatcher_text">网络监管服务</string>
     <string name="switch_text">切换</string>

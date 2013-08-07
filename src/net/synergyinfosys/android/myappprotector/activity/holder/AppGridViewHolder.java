@@ -54,7 +54,9 @@ public class AppGridViewHolder {
 
 				if (!isLocked(pkg)) {
 					Toast.makeText(mContext, "未被保护", Toast.LENGTH_SHORT).show();
-				} else {
+				}  
+				
+				{
 					// 启动
 					ComponentName component = new ComponentName(pkg, cls);
 					Intent i = new Intent();
@@ -141,13 +143,18 @@ public class AppGridViewHolder {
 			}
 
 			ResolveInfo info = mApps.get(position);
-//			String pkgName = info.activityInfo.packageName;
+			String pkgName = info.activityInfo.packageName;
 
 			Drawable d = info.activityInfo.loadIcon(mPM);
+			if( mHideList != null ){
+				if (  !isLocked(pkgName)) {
+					holder.appImage.setAlpha(0.5f);
+				}else{
+					holder.appImage.setAlpha(1.0f);
+				}
+			}
+			
 			MyUtil.setBackground(holder.appImage, d);
-//			if ( mHideList != null && !isLocked(pkgName)) {
-//				d.setAlpha(50);
-//			}
 
 			holder.appName.setText(info.activityInfo.loadLabel(mPM));
 			return convertView;

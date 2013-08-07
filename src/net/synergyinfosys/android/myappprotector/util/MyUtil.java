@@ -3,6 +3,9 @@ package net.synergyinfosys.android.myappprotector.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.synergyinfosys.android.myappprotector.activity.FakeHome;
+import net.synergyinfosys.android.myappprotector.bean.RunningAppInfo;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +18,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 public class MyUtil {
+	public static final String PKG_NAME = "net.synergyinfosys.android.myappprotector";
+	
 	/**
 	 * 用来判断服务是否运行.
 	 * 
@@ -97,6 +102,16 @@ public class MyUtil {
 		return false;
 	}
 	
+	public static void clearDefaultLauncer(Context context){
+		ComponentName localComponentName = new ComponentName( PKG_NAME, FakeHome.class.getName());
+		context.getPackageManager().setComponentEnabledSetting(localComponentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+		Intent localIntent = new Intent("android.intent.action.MAIN");
+		localIntent.addCategory("android.intent.category.HOME");
+		localIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(localIntent);
+		context.getPackageManager().setComponentEnabledSetting(localComponentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+	}
+	
 	/**
 	 * per sdk
 	 * 
@@ -116,5 +131,57 @@ public class MyUtil {
 	 	    	img.setBackground( d );
 	 	    }
 	    }
+	}
+	
+	public static ArrayList<RunningAppInfo> loadApps(Context context) {
+		ArrayList<RunningAppInfo> mApps = new ArrayList<RunningAppInfo>(); 
+
+		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		
+		List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(mainIntent, 0);
+		for( ResolveInfo info : list ){
+			RunningAppInfo a = new RunningAppInfo();
+			a.setAppIcon( info.activityInfo.loadIcon(context.getPackageManager()) );
+			a.setAppLabel( info.activityInfo.loadLabel(context.getPackageManager()).toString() );
+			a.setLocked( false );
+			a.setPkgName(info.activityInfo.packageName);
+			a.setLauncher(false);
+			mApps.add(a);
+		}
+		
+		//add other launcher lock
+//		Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
+//		launcherIntent.addCategory(Intent.CATEGORY_HOME);
+//		List<ResolveInfo> launcherList = context.getPackageManager().queryIntentActivities(launcherIntent, 0);
+//		for( ResolveInfo info : launcherList ){
+//			//ingore safe launcher..
+//			if( info.activityInfo.packageName.compareTo(PKG_NAME) == 0 ){
+//				continue;
+//			}
+//			RunningAppInfo a = new RunningAppInfo();
+//			a.setAppIcon( info.activityInfo.loadIcon(context.getPackageManager()) );
+//			a.setAppLabel( info.activityInfo.loadLabel(context.getPackageManager()).toString() );
+//			a.setLocked( true );
+//			a.setPkgName(info.activityInfo.packageName);
+//			a.setLauncher(true);
+//			mApps.add(0,a);
+//		}
+		
+		return mApps;
+	}
+	
+	public static List<ResolveInfo> getAllLauncher(Context context) {
+		Intent launcher = new Intent();
+		launcher.addCategory(Intent.CATEGORY_HOME);
+		launcher.setAction(Intent.ACTION_MAIN);
+
+		List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(launcher, 0);
+		// for( ResolveInfo r : list ){
+		// System.out.println( r.activityInfo.packageName );
+		// System.out.println( r.activityInfo.name );
+		// System.out.println();
+		// }
+		return list;
 	}
 }
