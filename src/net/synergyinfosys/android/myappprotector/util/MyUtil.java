@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 
 public class MyUtil {
 	/**
@@ -105,10 +106,15 @@ public class MyUtil {
 	@SuppressWarnings("deprecation")
 	public static void setBackground(View img, Drawable d){
 	    int sysVersion = android.os.Build.VERSION.SDK_INT;
-	    if( sysVersion <= 16){
-	    	img.setBackgroundDrawable(d);
+	    if( img instanceof ImageView ){
+	    	((ImageView) img).setImageDrawable(d);
 	    }else{
-	    	img.setBackground( d );
+	    	 if( sysVersion <= 16){
+	 	    	img.setBackgroundDrawable(d);
+	 	    	
+	 	    }else{
+	 	    	img.setBackground( d );
+	 	    }
 	    }
 	}
 }

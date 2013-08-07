@@ -21,6 +21,7 @@ import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -43,8 +44,8 @@ public class HomeActivity extends Activity implements OnClickListener {
 	private HashMap<String, Boolean> lockList = null;
 	
 	//for dock
-	private ResolveInfo mDialApp, mSMSApp, mEmailApp, mWebApp;
-	private ImageView imgForDial = null, imgForSMS = null, imgForEmail = null, imgForWeb = null;
+	private ResolveInfo mCameraApp, mVideoApp, mEmailApp, mWebApp;
+	private ImageView imgForCamera = null, imgForVideo = null, imgForEmail = null, imgForWeb = null;
 	AppGridViewHolder mAppListHolder = null;
 	
 	//for net watcher
@@ -86,47 +87,39 @@ public class HomeActivity extends Activity implements OnClickListener {
 		
 		loadDockApp();
 		
-		imgForDial = (ImageView) findViewById(R.id.imageView_forDial);
-		imgForDial.setOnClickListener(this);
-		if (mDialApp != null && imgForDial != null) {
-//			imgForDial.setBackground(mDialApp.activityInfo.loadIcon(getPackageManager()));
-			MyUtil.setBackground(imgForDial, mDialApp.activityInfo.loadIcon(getPackageManager()));
-			imgForDial.invalidate();
+		imgForCamera = (ImageView) findViewById(R.id.imageView_forDial);
+		imgForCamera.setOnClickListener(this);
+		if (mCameraApp != null && imgForCamera != null) {
+			MyUtil.setBackground(imgForCamera, mCameraApp.activityInfo.loadIcon(getPackageManager()));
 		}
 
-		imgForSMS = (ImageView) findViewById(R.id.imageView_forSMS);
-		imgForSMS.setOnClickListener(this);
-		if (mSMSApp != null && imgForSMS != null) {
-//			imgForSMS.setBackground(mSMSApp.activityInfo.loadIcon(getPackageManager()));
-			MyUtil.setBackground(imgForSMS, mSMSApp.activityInfo.loadIcon(getPackageManager()));
-			imgForSMS.invalidate();
+		imgForVideo = (ImageView) findViewById(R.id.imageView_forSMS);
+		imgForVideo.setOnClickListener(this);
+		if (mVideoApp != null && imgForVideo != null) {
+			MyUtil.setBackground(imgForVideo, mVideoApp.activityInfo.loadIcon(getPackageManager()));
 		}
 		
 		imgForEmail = (ImageView) findViewById( R.id.imageView_forEmail );
 		imgForEmail.setOnClickListener(this);
 		if( mEmailApp != null && imgForEmail != null ){
-//			imgForEmail.setBackground( mEmailApp.activityInfo.loadIcon(getPackageManager()) );
 			MyUtil.setBackground(imgForEmail, mEmailApp.activityInfo.loadIcon(getPackageManager()));
-			imgForEmail.invalidate();
 		}
 		
 		imgForWeb = (ImageView) findViewById( R.id.imageView_forWeb );
 		imgForWeb.setOnClickListener(this);
 		if( mWebApp != null && imgForWeb != null){
-//			imgForWeb.setBackground( mWebApp.activityInfo.loadIcon(getPackageManager()) );
 			MyUtil.setBackground(imgForWeb, mWebApp.activityInfo.loadIcon(getPackageManager()));
-			imgForWeb.invalidate();
 		}
 
 		LayoutInflater lf = LayoutInflater.from(this);
 		View viewGrid = lf.inflate(R.layout.activity_home_grid, null);
 		View viewIntroduction = lf.inflate(R.layout.activity_home_introduction, null);
-		View viewNetWatcher = lf.inflate(R.layout.activity_netwatcher_main, null);
+//		View viewNetWatcher = lf.inflate(R.layout.activity_netwatcher_main, null);
 		View viewAppLock = lf.inflate(R.layout.activity_applock_control, null);
 		mViewList = new ArrayList<View>();
 		mViewList.add(viewIntroduction);
 		mViewList.add(viewGrid);
-		mViewList.add(viewNetWatcher);
+//		mViewList.add(viewNetWatcher);
 		mViewList.add(viewAppLock);
 
 		mViewPager = (ViewPager) findViewById(R.id.myViewPager);
@@ -134,8 +127,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 		mViewPager.setCurrentItem(1);
 
 
-		View rootView = imgForDial.getRootView();
-//		rootView.setBackground(this.mContext.getResources().getDrawable(R.drawable.synergy));
+		View rootView = imgForVideo.getRootView();
 		MyUtil.setBackground(rootView, this.mContext.getResources().getDrawable(R.drawable.synergy));
 		
 		IntentFilter lockAllFilter = new IntentFilter();
@@ -143,7 +135,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 		registerReceiver(lockAllReceiver, lockAllFilter);
 		
 		//start the SERVICE!!
-		
 		startService(new Intent(this, LongLiveService.class));
 //		BootReceiver.registerAlarmStart(this.getApplicationContext())
 	}
@@ -162,28 +153,24 @@ public class HomeActivity extends Activity implements OnClickListener {
 	}
 
 	private void loadDockApp() {
-		Intent dialIntent = new Intent(Intent.ACTION_DIAL, null);
-		List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(dialIntent, 0);
+		List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(generateCameraIntent(), 0);
 		if (list != null && list.size() > 0) {
-			mDialApp = list.get(0);
+			mCameraApp = list.get(0);
 		}
 
-		Intent smsIntent = new Intent(Intent.ACTION_VIEW);
-		smsIntent.setType("vnd.android-dir/mms-sms");
-		list = mContext.getPackageManager().queryIntentActivities(smsIntent, 0);
+		list = mContext.getPackageManager().queryIntentActivities(generateVideoIntent(), 0);
 		if (list != null && list.size() > 0) {
-			mSMSApp = list.get(0);
+			mVideoApp = list.get(0);
 		}
 		
-		Intent emailIntent = new Intent( Intent.ACTION_SENDTO );
-		emailIntent.setData(Uri.parse("mailto:"));
-		list = mContext.getPackageManager().queryIntentActivities(emailIntent, 0);
+		
+		list = mContext.getPackageManager().queryIntentActivities(generateEmailIntent(), 0);
 		if (list != null && list.size() > 0) {
 			mEmailApp = list.get(0);
 		}
 		
-		Intent webIntent = new Intent( Intent.ACTION_WEB_SEARCH );
-		list = mContext.getPackageManager().queryIntentActivities(webIntent, 0);
+		
+		list = mContext.getPackageManager().queryIntentActivities(generateWebIntent(), 0);
 		if (list != null && list.size() > 0) {
 			mWebApp = list.get(0);
 		}
@@ -205,25 +192,47 @@ public class HomeActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.imageView_forDial:
-			Intent i = new Intent(Intent.ACTION_DIAL);
-			startActivity(i);
+			Log.i(TAG, "start camera..");
+			startActivity(generateCameraIntent());
 			break;
 		case R.id.imageView_forSMS:
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setType("vnd.android-dir/mms-sms");
-			startActivity(intent);
+			Log.i(TAG, "start video..");
+			startActivity(generateVideoIntent());
 			break;
 		case R.id.imageView_forEmail:
-			Intent emailIntent = new Intent( Intent.ACTION_SENDTO );
-			emailIntent.setData(Uri.parse("mailto:"));
-			startActivity( emailIntent );
+			Log.i(TAG, "start Email..");
+			startActivity( generateEmailIntent() );
 			break;
 			
 		case R.id.imageView_forWeb:
-			Intent webIntent = new Intent( Intent.ACTION_WEB_SEARCH );
-			startActivity( webIntent );
+			Log.i(TAG, "start WEB..");
+			startActivity( generateWebIntent() );
 			break;
 		}
+	}
+	
+	private Intent generateWebIntent(){
+		return new Intent( Intent.ACTION_VIEW, Uri.parse("http://www.bing.com") );
+	}
+	
+	private Intent generateEmailIntent(){
+		Intent emailIntent = new Intent( Intent.ACTION_SENDTO );
+		emailIntent.setData(Uri.parse("mailto:"));
+		return emailIntent;
+	}
+	
+	private Intent generateVideoIntent(){
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("video/*"); 
+		Intent wrapperIntent = Intent.createChooser(intent, null);
+		
+		return wrapperIntent;
+	}
+	
+	private Intent generateCameraIntent(){
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse("content://mms/scrapSpace"));
+		return intent;
 	}
 
 	private PagerAdapter pagerAdapter = new PagerAdapter() {
@@ -261,12 +270,12 @@ public class HomeActivity extends Activity implements OnClickListener {
 				if( mAppListHolder == null )
 					mAppListHolder = new AppGridViewHolder(HomeActivity.this);
 				break;
-			case 2:
-				Log.i(TAG, "initial net watcher view..");
-				if( mNetWatcherHolder == null )
-					mNetWatcherHolder = new NetWatcherViewHolder(HomeActivity.this);
-				break;
-			case 3:
+//			case 2:
+//				Log.i(TAG, "initial net watcher view..");
+//				if( mNetWatcherHolder == null )
+//					mNetWatcherHolder = new NetWatcherViewHolder(HomeActivity.this);
+//				break;
+			case /*3*/2:
 				Log.i(TAG, "initial app lock view..");
 				if( mAppLockHolder == null )
 					mAppLockHolder = new AppLockViewHolder(HomeActivity.this);

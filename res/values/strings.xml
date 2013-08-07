@@ -12,7 +12,7 @@
     <string name="content_description">default content description</string>
     <string name="notification_forground_service_title">安全桌面正在运行</string>
     <string name="notification_forground_service_text">点击启动桌面切换程序</string>
-    <string name="home_introduction">新能聚信安全桌面\n#保护您的办公数据\n#监控网络流量\n#应用加锁与隔离\n#MDM集中管理</string>
+    <string name="home_introduction">新能聚信安全桌面\n\n#快速桌面切换\n#保护办公数据\n#监控网络连接\n#应用加锁与隔离\n#MDM管理系统\n</string>
     <string name="applock_text">安全桌面监管服务</string>
      <string name="applock_mdm">MDM服务</string>
     <string name="applock_lockAll">解除/锁定 已选应用</string>

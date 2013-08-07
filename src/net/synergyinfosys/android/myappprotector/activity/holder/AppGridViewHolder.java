@@ -141,14 +141,13 @@ public class AppGridViewHolder {
 			}
 
 			ResolveInfo info = mApps.get(position);
-			String pkgName = info.activityInfo.packageName;
+//			String pkgName = info.activityInfo.packageName;
 
 			Drawable d = info.activityInfo.loadIcon(mPM);
-//			holder.appImage.setBackground(d);
 			MyUtil.setBackground(holder.appImage, d);
-			if ( mHideList != null && !isLocked(pkgName)) {
+//			if ( mHideList != null && !isLocked(pkgName)) {
 //				d.setAlpha(50);
-			}
+//			}
 
 			holder.appName.setText(info.activityInfo.loadLabel(mPM));
 			return convertView;

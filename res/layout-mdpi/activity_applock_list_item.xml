@@ -9,11 +9,11 @@
 
     <ImageView
         android:id="@+id/applock_list_img"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentLeft="true"
         android:contentDescription="@string/applock_list_description"
-        android:paddingLeft="15dp"
+        android:paddingLeft="5dp"
         android:scaleType="centerInside" />
 
     <TextView 

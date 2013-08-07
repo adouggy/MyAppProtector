@@ -16,6 +16,6 @@
         android:text="@string/home_introduction"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/lightsalmon"
-        android:textSize="30sp" />
+        android:textSize="40sp" />
 
 </RelativeLayout>
